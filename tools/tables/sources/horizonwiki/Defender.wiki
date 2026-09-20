@@ -1,0 +1,12 @@
+{{Disambig2|[[Defender (Monster)]]}}
+{{Job Ability
+| description = Enhances defense but weakens attacks.
+| job = Warrior
+| level = 25
+| recast = 3 minutes (-6 seconds with each [[Merit Points|merit upgrade]])
+| duration = 3 minutes
+| notes = *When active, the user's [[defense]] is increased by 25% and [[attack]] is decreased by 25%.
+*Is able to be removed with [[Dispel]] and [[Finale]].
+| changes = Defender
+| macro = /ja "Defender" <me>
+}}

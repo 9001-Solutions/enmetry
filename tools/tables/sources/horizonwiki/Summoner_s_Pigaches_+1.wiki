@@ -1,0 +1,37 @@
+{{Item Sections}}<section begin="Item Image"/>{{Item Image|Smnpig+1.png|Summoner's Pigaches +1}}<section end="Item Image"/>
+==Statistics==
+{{Item Statistics|nd
+| type = Armor
+| name = Summoner's pigaches +1
+| tags = {{Rare}}{{Exclusive}}
+| slot = Feet
+| stats = {{stat|def|15}} {{stat|mp|+25}}<br/>'''[[Enhances Avatar Attack|Enhances avatar attack]]'''<br/>{{stat|Avatar}} {{stat|Enmity|+2}}<br/>{{stat|Blood Pact| ability delay -2}}
+| level = 75
+| jobs = [[SMN]]
+| set = Summoner's Attire +1 Set
+| notes = ''Avatar: Enhances attack''
+*{{stat|Attack|+10}}
+}}
+{{Storable|Porter Moogle|07}}
+
+==Horizon Changes {{changes}}==
+{{HorizonChangesBox}}
+
+==Other Uses==
+{{Used In
+| resale price = none
+<!--| reforged relic armor = Glyphic Pigaches
+}}
+{{Trials
+| trial 4803 = [[Summoner's Pigaches +2]]-->
+}}
+
+==How to Obtain==
+{{AH|Undeliverable Exclusive}}
+===Quest===
+Obtained by trading the following items to [[Sagheera]] in [[Port Jeuno]]:
+*[[Summoner's Pigaches]]
+*[[Summoner's Pigaches -1]]
+*[[Ancient Lumber]]
+*28 x [[Tukuku Whiteshell|T. Whiteshell]]
+[[Category:Relic Armor +1]]

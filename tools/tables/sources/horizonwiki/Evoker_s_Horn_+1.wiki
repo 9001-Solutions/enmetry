@@ -1,0 +1,31 @@
+{{Item Sections}}[[Category:Artifact Armor +1]] 
+<section begin="Item Image"/>{{Item Image|Evoker's horn plus 1.png|Evoker's Horn +1}}<section end="Item Image"/>
+==Statistics==
+{{Item Statistics
+| type = Armor
+| name = Evoker's Horn +1
+| tags = {{Rare}}{{Exclusive}}
+| slot = Head
+| stats = {{stat|DEF|15}} {{stat|MP|+25}} {{stat|INT|+6}} {{stat|MND|+6}}<br>{{stat|Summoning Magic Skill|+5}}<br>'''[[Avatar]]:''' {{stat|Enmity|-3}}
+| level = 74
+| jobs = [[SMN]]
+| set = Evoker's Attire +1 Set
+}}
+
+==Horizon Changes {{changes}}==
+{{HorizonChangesBox}}
+
+==Other Uses==
+{{Used In
+| resale price = none
+}}
+
+==How to Obtain==
+{{AH|Undeliverable Exclusive}}
+===Quest===
+Obtained by trading the following items to [[Sagheera]] in [[Port Jeuno]]:
+*[[Evoker's Horn]]
+*[[Glittering Yarn]]
+*[[Astral Leather]]
+*[[Coral Horn]]
+*25 x [[Ancient Beastcoin]]

@@ -1,0 +1,26 @@
+{{Item Sections}}
+[[Category:Artifact Armor]][[Category:Summoner]]
+<section begin="Item Image"/>{{Item Image|EvokersPigaches.png|Evoker's Pigaches}}<section end="Item Image"/>
+==Statistics==
+{{Item Statistics
+| type = Armor
+| name = Evoker's Pigaches
+| tags = {{Rare}}{{Exclusive}}
+| slot = Feet
+| stats = {{stat|def|10}} {{stat|mp|+20}} {{stat|agi|+5}} <br>{{stat|avatar}} '''[[Enhances Avatar Evasion|Enhances Evasion]] <br>
+{{stat|avatar}} {{stat|Enmity|-2}}
+| level = 56
+| jobs = [[SMN]]
+| set = Evoker's Attire Set
+}}
+==Horizon Changes {{changes}}==
+{{HorizonChangesBox|{{stat|mp|+20}} instead of {{stat|mp|+15}}|Description reads ''Avatar: Enhances Evasion'' instead of ''Enhances Avatar Evasion'' but has the same effect|}}
+==Other Uses==
+{{Used In
+| resale price = none
+| artifact armor upgrade = Evoker's Pigaches +1
+}}
+==How to Obtain==
+{{AH|Undeliverable Exclusive}}
+===Quest===
+*[[Borghertz's Calling Hands]] ([[Toraimarai Canal]] Coffer)

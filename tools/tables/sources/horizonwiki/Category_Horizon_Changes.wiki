@@ -1,0 +1,767 @@
+{{Tocright}}
+HorizonXI is an '''era+''' Final Fantasy XI private server. '''Era+''' means that there are many custom changes and additions made by the development team in an attempt to balance the game more fairly and to make some lesser used content more relevant. This page contains a list of all '''KNOWN''' custom changes.
+
+== Jobs ==
+=== [[Warrior]] ===
+<section begin=Warrior/>
+* Minor changes to [[Warrior#Job_Specific_Equipment|Artifact Armor]].
+* Starts the game with an {{Item Tooltip|Onion Greataxe}} instead of an {{Item Tooltip|Onion Sword}}.
+* Significant changes to the relic weapon {{Item Tooltip|Ragnarok}}.
+<section begin=Defender/>*[[Defender]] provides -25% enmity loss reduction when taking damage (works with WAR sub job). Additionally gives a +10% chance to block with a shield for WAR main job only. <section end=Defender/><section end=Warrior/>
+<section begin=Provoke/>* [[Provoke]] now receives an additional 250 [[Enmity|cumulative enmity (CE)]] when [[Defender]] is active and Warrior is set as the main job. This number is reduced to +180 when Warrior is set as the support job.<section end=Provoke/>
+
+=== [[Monk]] ===
+<section begin=Monk/>
+* Minor changes to [[Monk#Job_Specific_Equipment|Artifact Armor]].
+* The [[Artifact Weapon]] [[Beat Cesti]] has been replaced with the custom item {{Item Tooltip|Tekko Kagi}}.
+* Moderate changes to the relic weapon {{Item Tooltip|Spharai}}.
+<section begin=Boost/>* [[Boost]] has a larger [[attack]] bonus of 20%, a longer recast of 30 seconds, and a duration of one attack or Weaponskill.<section end=Boost/>
+<section begin=Focus/>* [[Focus]] is learned at level 15 instead of 25, and has a 3 minute duration. {{Verification}}<section end=Focus/>
+<section begin=Dodge/>* [[Dodge]] is learned at level 25, has a 3 minute duration, and increases [[Guarding Skill|guard rate]] by ???. {{Verification}}<section end=Dodge/>
+<section begin=Chakra/>* [[Chakra]]'s recast time has been reduced to 2 minutes, down from 3. It also removes multiple status effects the player is inflicted with.<section end=Chakra/>
+<section begin=Chi Blast/>
+* [[Chi Blast]] now also removes 1 mob buff ([[Dispel]]). Testing is required to see whether this effect is random. {{Verification}}
+* [[Boost|Boost's]] effect on [[Chi Blast]] has been lessened from retail.<section end=Chi Blast/><section end=Monk/>
+
+=== [[White Mage]] === 
+<section begin=White Mage/>
+* Minor changes to [[White Mage#Job_Specific_Equipment|Artifact Armor]].
+* Significant changes to the relic weapon {{Item Tooltip|Mjollnir}}.
+* +3 to base [[MP Recovered While Healing|MP recovery rate]], for a total of +7, upon reaching level 75.
+<section begin=Devotion/>* [[Devotion]] is available at level 45 instead of via merits.<section end=Devotion/>
+<section begin=Divine Veil/>* [[Divine Veil]] can also double the potency and duration of the next [[Regen]] spell, as well as its usual effects, while the job ability [[Divine Seal]] is active.<section end=Divine Veil/>
+<section begin=Clear Mind WHM/>* Higher levels of [[Clear Mind]] can be obtained at lower levels than normal, and the effects of certain tiers are increased.<section end=Clear Mind WHM/>
+<section begin=Banish-Effect (Merit)/>* The [[Banish Effect (Merit)]] category has been buffed and its effects against [[:Category:Undead|undead]] now extend to [[Cure]] spells and [[Holy]]. - [[Patch Notes: October 13th 2023|Version 1.2]]<section end=Banish-Effect (Merit)/>
+<section end=White Mage/>
+<!-- Keep spells outside of the "section begin"-->
+{{#section:Category:Horizon Changes|Reraise}}
+{{#section:Category:Horizon Changes|Haste}}
+{{#section:Category:Horizon Changes|Banish}}
+{{#section:Category:Horizon Changes|Protectra V}}
+{{#section:Category:Horizon Changes|Shellra V}}
+
+=== [[Black Mage]] === 
+<section begin=Black Mage/>
+* Minor changes to [[Black Mage#Job_Specific_Equipment|Artifact Armor]] and significant changes to {{Item Tooltip|Casting Wand}}.
+* Major changes to the relic weapon {{Item Tooltip|Claustrum}}.
+* +2 to base [[MP Recovered While Healing|MP recovery rate]], for a total of +6, upon reaching level 75.
+<section end=Black Mage/>
+{{#section:Category:Horizon Changes|Elemental Magic}}
+{{#section:Category:Horizon Changes|Elemental Debuffs}}
+{{#section:Category:Horizon Changes|Magic Burst}}
+{{#section:Category:Horizon Changes|Poison}}
+{{#section:Category:Horizon Changes|Bind}}
+{{#section:Category:Horizon Changes|Ancient Magic II}}
+
+=== [[Red Mage]] ===
+<section begin=Red Mage/>
+* Minor changes to [[Red Mage#Job_Specific_Equipment|Artifact Armor]] and significant changes to {{Item Tooltip|Fencing Degen}}.
+* Starts the game with an {{Item Tooltip|Onion Sword}} instead of an {{Item Tooltip|Onion Dagger}}
+* Major changes to the relic weapon {{Item Tooltip|Mandau}}, including the new [[Adaptive Effect]].
+* 30% reduction in enmity gained from casting [[Enfeebling Magic]] while your main job is Red Mage.
+* [[Fast Cast]] has had its recast reduction halved (cast time reduction is unaffected).
+* +1 to base [[MP Recovered While Healing|MP recovery rate]], for a total of +5, upon reaching level 75.
+<section begin=Convert/>* [[Convert]] has had its recast increased from 10 to 13 minutes.
+* The group 1 merit [[Convert Recast|Convert Recast Reduction]] now only reduces the recast by 12 seconds, down from 20.<section end=Convert/><section end=Red Mage/>
+{{#section:Category:Horizon Changes|Elemental Magic}}
+{{#section:Category:Horizon Changes|Refresh}}
+{{#section:Category:Horizon Changes|Poison}}
+{{#section:Category:Horizon Changes|Bind}}
+{{#section:Category:Horizon Changes|Bio III}}
+{{#section:Category:Horizon Changes|Slow II}}
+{{#section:Category:Horizon Changes|Paralyze II}}
+{{#section:Category:Horizon Changes|Dia III}}
+
+=== [[Thief]] === 
+<section begin=Thief/>
+* Minor changes to [[Thief#Job_Specific_Equipment|Artifact Armor]].
+* Major changes to the relic weapon {{Item Tooltip|Mandau}}, including the new [[Adaptive Effect]].
+* [[Treasure Hunter]] has been removed from {{Item Tooltip|Thief's Knife}} and has moved to the custom item {{Item Tooltip|Nanaa's Charm}}.
+<section begin=Perfect Dodge/>* The player's [[Accuracy]] and [[Ranged Accuracy]] when using [[Perfect Dodge]] are increased by 999.<section end=Perfect Dodge/>
+<section begin=Sneak Attack/>* Many elemental type [[:Category:Weapon Skills|weapon skills]] have been changed to the "hybrid" type and will now stack with [[Sneak Attack]].<section end=Sneak Attack/>
+<section begin=Triple Attack/>* [[Triple Attack]] is unlocked at level 30 instead of 55.<section end=Triple Attack/>
+<section begin=Assassin/>* [[Assassin]] is unlocked at level 50 instead of 60.<section end=Assassin/>
+<section begin=Accomplice/>* [[Accomplice]] <span class="wotglive">was not available in the current era,</span> can now be used on an alliance (it was party only on retail), has had its level reduced from 65 to 45 and no longer shares a recast timer with [[Collaborator]].<section end=Accomplice/>
+<section begin=Collaborator/>* [[Collaborator]] <span class="wotglive">was not available in the current era,</span> can now be used on an alliance (it was party only on retail), has had its level reduced from 65 to 45 and its recast time increased from 1 to 5 minutes. It no longer shares a recast timer with [[Accomplice]] and it now ''redirects 50%'' of the [[Thief]]'s enmity to their chosen target. Note that the chat log will state that you stole the target's enmity per its retail effect, but its intended effect of redirecting enmity to the target is performed.<section end=Collaborator/>
+<section begin=Bully/>* [[Bully]] was not available in the current era, has had its level reduced from 93 to 40, its recast has been lowered from 3 to 1 minute. The ability has been completely reworked, now giving a guaranteed status bolt additional effect proc on monsters within 15 levels of the [[Thief]]. On [[Notorious Monster]]s, the chance of landing a status effect bolt has been increased but not guaranteed. The omni-directional sneak attack portion has been removed.<section end=Bully/>
+<section begin=Mug/>* [[Mug]] grants a critical hit rate bonus of 5% on the target monster for 30 seconds. Recast time reduced from 15 minutes to 10 minutes. This activates as a bewildered daze regardless of success of mug; its in-game message reads the "<target>'s Bewildered Daze effect wears off." after 30 seconds. <section end=Mug/><section end=Thief/>
+
+=== [[Paladin]] === 
+<section begin=Paladin/>
+* Minor changes to [[Paladin#Job_Specific_Equipment|Artifact Armor]].
+* Significant changes to the relic weapon {{Item Tooltip|Ragnarok}}.
+<section begin=Holy Circle/>* [[Holy Circle]] increased damage for party member against [[:Category:Undead|undead]] mobs. Protects against [[Aggro|blood aggro]] but further testing is required to ascertain how. {{Verification}}<br>Recast has also been doubled to 10 minutes.<section end=Holy Circle/>
+<section begin=Chivalry/>* [[Chivalry]] is available at level 45. It was originally a merit ability. Its recast has also been reduced from 20 to 15 minutes.<section end=Chivalry/>
+<section begin=Shield Bash/>* The accuracy of the stun component of the job ability [[Shield Bash]] has been increased. It will now provide a similar stun rate to the job ability [[Weapon Bash]]. [[Patch Notes: November 17th 2023| - Version 1.2]]<section end=Shield Bash/>
+<section begin=Cover/>* The job ability [[Cover]] is now usable on alliance members. [[Patch Notes: November 17th 2023| Version 1.2]]
+<section end=Cover/>
+<section begin=Auto-Refresh-Paladin/>* [[Auto Refresh]]'s level has been reduced to 25, down from 35. <span class="toaulive">It wasn't available until the [[Treasures of Aht Urhgan]] era.</span><section end=Auto-Refresh-Paladin/>
+<section Begin=Shield Mastery/><ul><li class="toaulive">[[Shield Mastery]] wasn't available until the [[Treasures of Aht Urhgan]] era.</li></ul><section end=Shield Mastery/><section end=Paladin/>
+{{#section:Category:Horizon Changes|Clubs}}
+{{#section:Category:Horizon Changes|Shields}}
+{{#section:Category:Horizon Changes|Banish}}
+{{#section:Category:Horizon Changes|Enlight}}
+
+=== [[Dark Knight]] ===
+<section begin=Dark Knight/>
+* Moderate changes to [[Dark Knight#Job_Specific_Equipment|Artifact Armor]].
+* Minor change to the relic weapon {{Item Tooltip|Apocalypse}}.
+* Significant changes to the relic weapon {{Item Tooltip|Ragnarok}}.
+<section begin=Arcane Circle/>* [[Arcane Circle]] has a damage bonus against arcana for all parties members as well as providing protection against [[Aggro|magic aggro]]. The recast of this ability has also been doubled to 10 minutes.
+<section begin=Arcane Circle-Recast/>* [[Arcane Circle Recast]] merits now decrease its recast time by 20 seconds per merit, instead of 10.<section end=Arcane Circle-Recast/><section end=Arcane Circle/>
+<ul><li class="toau"><section begin=Desperate Blows/>[[Desperate Blows]] was a merit ability in era.</li><li class="toaulive">[[Desperate Blows]] was a merit ability in era and wasn't available until the [[Treasures of Aht Urhgan]] era.</li></ul><section end=Desperate Blows/>
+<section begin=Souleater/>* [[Souleater]] now has a recast time of 5 minutes, instead of 6.
+<section begin-Souleater-Recast/>* [[Souleater Recast]] merits now decreases its recast by 10 seconds per merit, instead of 12.<section end=Souleater-Recast/><section end=Souleater/>
+<section begin=Last Resort/>* [[Last Resort]]'s duration has been doubled from 30 to 60 seconds.<section end=Last Resort/><section end=Dark Knight/>
+{{#section:Category:Horizon Changes|Poison}}
+
+=== [[Beastmaster]] === 
+<section begin=Beastmaster/>
+* Moderate changes to [[Beastmaster#Job_Specific_Equipment|Artifact Armor]].
+* Significant changes to the relic weapon {{Item Tooltip|Guttler}}.
+<section begin=Save My Son/>
+* <strike>The night flowers that need to be examined while doing the [[Save My Son]] quest can be examined as early as 16:00 and as late as 06:00 hours in game. This may or may not be a bug.</strike> This seems to be reverted to retail state  after rebase ([https://discord.com/channels/933423693848260678/1467740936762167330 Discord bug report after rebase] <section end=Save My Son/>
+<section begin=Ready/>* [[Ready]] wasn't available until 2009. There are only 45 seconds between charges as opposed to 60 seconds when it was available. A maximum of 3 charges still applies but this is now attained after 2 minutes and 25 seconds has passed as opposed to 3 minutes.
+* Every physical and magical damage dealing TP move is no longer imbued with Skillchain Attributes/Magic Burst Properties.<section end=Ready/>
+<section begin=Call Beast/>* Pets will persist through a player zoning.
+* All HQ [[Jug Pet|Familiars]] now cap at 75.
+* All NQ [[Jug Pet|Familiars]] are now 30 minute duration, and HQ are 60 minutes.
+<section end=Call Beast/>
+<section begin=Pet Items/>* [[:Category:Pet Items|Pet food]] has been buffed to provide increased HP/stats etc. to pets.<section end=Pet Items/><section end=Beastmaster/>
+<!-- Hidden as opposed to deleted in case this ability is re-added.
+*<section begin=Bestial Loyalty/><s>[[Bestial Loyalty]]</s> - This ability was removed with [[Patch Notes: April 14th 2023|Version 1.1]]. <!--Out of era ability added in, modified to sharing a recast with call beast and a 30 minute cooldown.<section end=Bestial Loyalty/>
+*<section begin=Call Beast/><s>[[Call Beast]]</s> - shared a cooldown with bestial loyalty until it was removed in [[Patch Notes: April 14th 2023|Version 1.1]].<section end=Call Beast/> -->
+
+=== [[Bard]] ===
+<section begin=Bard/>
+* Minor changes to [[Bard#Job_Specific_Equipment|Artifact Armor]].
+* Significant changes to the relic weapon {{Item Tooltip|Mandau}}.
+* Changing instruments no longer causes TP loss.
+<section end=Bard/>
+
+=== [[Ranger]] ===
+<section begin=Ranger/>
+* Moderate changes to [[Ranger#Job_Specific_Equipment|Artifact Armor]].
+* Significant changes to the relic weapon {{Item Tooltip|Yoichinoyumi}}.
+<section begin=Eagle Eye Shot/>* [[Eagle Eye Shot]] now has 100% accuracy (it could miss in era).<section end=Eagle Eye Shot/> 
+<section begin=Scavenge/>* [[Scavenge]] is the updated 2013 version that allows for recovering spent ammo and not fletchings, arrowheads etc.<section end=Scavenge/>
+<section begin=Camouflage/>* [[Camouflage|Camouflage]] grants an [[enmity]] reduction on the next attack.<section end=Camouflage/>
+<section begin=Velocity Shot/>*[[Velocity Shot]] wasn't available until the Wings of the Goddess era.<section end=Velocity Shot/><section end=Ranger/>
+<section begin=Dead Aim/>* [[Dead Aim]] is available via the {{Item Tooltip|Sharpshooter's Ring}} and wasn't available during the current era.<section end=Dead Aim/>
+
+=== [[Samurai]] ===
+<section begin=Samurai/>
+* Minor changes to [[Samurai#Job_Specific_Equipment|Artifact Armor]].
+* Significant changes to the relic weapon {{Item Tooltip|Yoichinoyumi}}.
+<section begin=Hasso/>* [[Hasso]] wasn't available in the CoP era. The bonus effects of [[Zanshin]] appears to no longer be in effect {{verification}}.<section end=Hasso/>
+<section begin=Seigan/>* [[Seigan]] wasn't available in the CoP era. The bonus effects of [[Zanshin]] appears to no longer be in effect {{verification}}.<section end=Seigan/>
+<section begin=Warding Circle/>* [[Warding Circle]] increases party-wide damage dealt against Demon enemies.<section end=Warding Circle/>
+<section begin=Zanshin/>*[[Zanshin]] - Doesn't gain the activation rate bonus from Hasso/Seigan. It has been reported that it no longer activates on attacks that are guarded, countered or deal 0 damage. {{verification}}<section end=Zanshin/><section end=Samurai/>
+
+=== [[Ninja]] ===
+<section begin=Ninja/>
+* Minor changes to [[Ninja#Job_Specific_Equipment|Artifact Armor]].
+<section begin=Mijin Gakure/>* [[Mijin Gakure]] has been replaced with {{Item Tooltip|Mikage}}. - [[Patch Notes: April 14th 2023|Version 1.1]]<section end=Mijin Gakure/>
+<section begin=Utsusemi: Ni/>* [[Utsusemi: Ni]] has had its recast increased by 15 seconds.<section end=Utsusemi: Ni/>
+<section begin=Utsusemi: Ichi/>* [[Utsusemi: Ichi]] has had its recast increased by 15 seconds.<section end=Utsusemi: Ichi/>
+*<section begin=Yonin/>[[Yonin]] is learned at Level 20 instead of 40, is modified to reduce [[attack]] by 15%, increase [[enmity]] by 10, reduce recast of [[Utsusemi]] by 10 seconds, and reduce enemy critical chance. It does not grant nor enhances the job trait [[Ninja Tool Expertise]].<section end=Yonin/>
+<section begin=Ninja Tool Expertise/>* [[Ninja Tool Expertise]] is learned at Level 40 as a trait. <section end=Ninja Tool Expertise/><section end=Ninja/>
+{{#section:Category:Horizon Changes|Ninjutsu}}
+
+=== [[Dragoon]] === 
+<section begin=Dragoon/>
+* Moderate changes to [[Dragoon#Job_Specific_Equipment|Artifact Armor]].
+* Moderate changes to the relic weapon {{Item Tooltip|Gungnir}}.
+<section begin=Ancient Circle/>* [[Ancient Circle]] now increases damage dealt by the party to dragon enemies. Its recast time has been increased to 10 minutes.<section end=Ancient Circle/>
+<section begin=Steady Wing/>* [[Steady Wing]] was not available in the current era and its level has been reduced from 95 to 30.<section end=Steady Wing/><section end=Dragoon/>
+
+=== [[Summoner]] ===
+<section begin=Summoner/>
+* Moderate changes to [[Summoner#Job_Specific_Equipment|Artifact Armor]].
+* Significant changes to the relic weapon {{Item Tooltip|Claustrum}}.
+*Avatar basic attacks are now [[slashing damage]].
+*<section begin=Whispering Wind/>[[Whispering Wind]] is now available from level 38 and additionally removes some status ailments including: [[Blind (Status Effect)|Blind]], [[Poison (Status Effect)|Poison]], [[Paralysis]], [[Disease]], [[Virus]], [[Petrification]], [[Sleep (Status Effect)|Sleep]], [[Silence (Status Effect)|Silence]] and [[Slow (Status Effect)|Slow]].<section end=Whispering Wind/>
+*<section begin=Spring Water/>[[Spring Water]] now gives an AoE 2 MP per tick [[Refresh (Status Effect)|refresh]].<section end=Spring Water/>
+*<section begin=Crimson Howl/>[[Crimson Howl]]'s duration has been increased to 3 minutes.<section end=Crimson Howl/>
+*<section begin=Ecliptic Growl/>[[Ecliptic Growl]] level has swapped with [[Ecliptic Howl]] and is now unlocked at level 54 as opposed to 43 in era.<section end=Ecliptic Growl/>
+*<section begin=Ecliptic Howl/>[[Ecliptic Howl]] level has swapped with [[Ecliptic Growl]] and is now unlocked at level 43 as opposed to 54 in era.<section end=Ecliptic Howl/>
+*<section begin=Shining Ruby/>[[Shining Ruby]]'s effect can now overwrite itself.<section end=Shining Ruby/>
+*<section begin=Hastega (Blood Pact)/>The value of [[Hastega (Blood Pact)]] has been increased to be inline with the [[White Magic]] spell [[Haste]]. This means the two will be interchangeable and can overwrite each other. The MP cost has also been increased to 129 in era, up from 112.<section end=Hastega (Blood Pact)/><section end=Summoner/>
+*<section begin=Meteor Strike/>[[Meteor Strike]] is obtained by completing a level 75 solo avatar trial rather than through Summoner Group 2 merits.<section end=Meteor Strike/>
+*<section begin=Geocrush/>[[Geocrush]] is obtained by completing a level 75 solo avatar trial rather than through Summoner Group 2 merits.<section end=Geocrush/>
+*<section begin=Grand Fall/>[[Grand Fall]] is obtained by completing a level 75 solo avatar trial rather than through Summoner Group 2 merits.<section end=Grand Fall/>
+*<section begin=Wind Blade/>[[Wind Blade]] is obtained by completing a level 75 solo avatar trial rather than through Summoner Group 2 merits.<section end=Wind Blade/>
+*<section begin=Heavenly Strike/>[[Heavenly Strike]] is obtained by completing a level 75 solo avatar trial rather than through Summoner Group 2 merits.<section end=Heavenly Strike/>
+*<section begin=Thunderstorm/>[[Thunderstorm]] is obtained by completing a level 75 solo avatar trial rather than through Summoner Group 2 merits.<section end=Thunderstorm/>
+
+=== [[Corsair]] ===
+<section begin=Corsair/>
+*<section begin=Hexaguns/>Hexaguns have been reworked to be "useful" {{verification}}<section end=Hexaguns/>
+*<section begin="Corsair's Roll"/>[[Corsair's Roll]] is learned at level 75 instead of level 5. [[Ninja's Roll|Ninja Roll]] is learned at level 5 in its place.<section end="Corsair's Roll"/>
+*<section begin="Phantom Roll"/>
+* Equipment with the "Phantom Roll"+1 effect must be worn while using the job ability Double-Up in order to gain the "Phantom Roll" bonus, regardless of whether the items were equipped during the initial Phantom Roll.
+* Job Bonuses for [[Phantom Roll]] (Having X job in your party) do not exist.
+* Many level requirements have been changed for rolls. Check the roll table for more info.<section end="Phantom Roll"/>
+*<section begin="Chaos Roll"/>
+* [[Chaos Roll]] now grants flat attack instead of a #% increase.<section end="Chaos Roll"/>
+*<section begin="Gallant's Roll"/>
+* [[Gallant's Roll]] now grants flat defense instead of a #% increase.<section end="Gallant's Roll"/>
+*<section begin="Healer's Roll"/>
+* [[Healer's Roll]] now grants Increases the amount of MP recovered while healing for party members within area of effect instead of Cure Potency.<section end="Healer's Roll"/>
+<section end=Corsair/>
+*<section begin="Quick Draw"/>
+* [[Quick Draw]] now has 2 charges, instead of just 1.
+* The damage formula now uses 2 times the contribution of Bullet DMG as before.
+*<section end="Quick Draw"/>
+=== Blue Magic ===
+<section begin=Blue Mage/>
+Changes to Blue Magic spells:
+*<section begin="Refueling" />
+* [[Refueling]] grants 15% Haste instead of 10%.{{verification}}
+*<section end="Refueling"/>
+*<section begin="Blood Saber"/>
+* [[Blood Saber]] costs 3 Blue Magic set points instead of 2 and contributes 2 trait points toward [[Auto Refresh]] instead of providing no job trait. The current spell card displays 4 trait points due to a known display bug; its intended contribution is 2.
+*<section end="Blood Saber"/>
+*<section begin="Occultation"/>
+* [[Occultation]] is available to Blue Mages at level 38 instead of level 88 and requires 86 Blue Magic skill to learn. Combined with [[Screwdriver]], this makes [[Evasion Bonus]] available from set spells at level 38.
+*<section end="Occultation"/>
+*<section begin="Empty Thrash"/>
+* [[Empty Thrash]] is available to Blue Mages at level 34 instead of level 87 and requires 74 Blue Magic skill to learn. Its job-trait assignment is changed from [[Double Attack]] to [[Max HP Boost]], to which it contributes 4 trait points.
+*<section end="Empty Thrash"/>
+*<section begin="Digest"/>
+* [[Digest]] contributes 4 trait points toward [[Conserve MP]] instead of providing no Blue Magic job trait.
+*<section end="Digest"/>
+*<section begin="Metallic Body"/>
+* [[Metallic Body]] contributes 4 trait points toward [[Conserve MP]] instead of providing no Blue Magic job trait. It now costs 3 Blue Magic set points. It's formula has been changed to use include MND in addition to skill, and the cap increased to 250.
+*<section end="Metallic Body"/>
+<section begin="Blank Gaze"/>
+* [[Blank Gaze]] contributes 4 trait points toward [[Magic Attack Bonus]] instead of providing no Blue Magic job trait.
+<section end="Blank Gaze" />
+*<section begin="Magic Hammer"/>
+* [[Magic Hammer]] 
+**no longer contributes to [[Magic Attack Bonus]] and grants no job trait points.
+**restores MP equal to damage dealt, even when the target has no MP. MP recovery is not limited by the target's current MP.
+**deals damage and restores MP when used against [[Undead|undead]].
+<section end="Magic Hammer"/>
+*<section end=Blue Mage/>
+
+== Combat ==
+<section begin=Attack&Accuracy/>* [[Attack]] and [[Accuracy]] modifiers have been adjusted as part of a general balancing pass on Horizon. The purpose of these adjustments is to compensate for current and future player power while keeping in mind the addition of new items, job abilities, traits, and merits in the future. - [[Patch Notes: November 17th 2023| Version 1.2]]<section end=Attack&Accuracy/>
+:[[File:Attack&Accuracy_modifiers_1.2.png]]
+* Many [[Clubs]] had their damage increased. 
+<section begin=Damage Type Weakness/>* All damage type (piercing, blunt, slashing) bonuses are reduced from 25% to 12.5% against monsters with a particular weakness to one of the types, e.g. birds now only take 12.5% extra damage.<section end=Damage Type Weakness/>
+<section begin=TP/>* [[TP]] is measured in 1000% increments whereas in era this was in 100%.<section end=TP/>
+<section begin=Paralyze (Status Effect)/>* If the status effect [[Paralyze (Status Effect)|paralyze]] procs whilst a player attempts to use a scroll, the scroll will no longer be lost.<section end=Paralyze (Status Effect)/>
+=== Experience Points ===
+* Horizon uses Wings of the Goddess [[EXP]] rates.
+* [[Level Sync]] is available and limited to 10 levels before an [[EXP]] penalty begins to take effect. See the level sync page for more information.
+* All [[Experience Scrolls]] give triple the amount of [[EXP]]. - [[Patch Notes: April 14th 2023|Update. 1.1]]
+
+=== [[Weapon Skills]] ===
+* Every [[weapon]] type will now obtain its first [[Weapon Skill|weapon skill]] at skill level 5 instead of skill level 10. - [[Patch Notes: November 17th 2023| Version 1.2]]
+* [[Skillchain]] damage against mobs no longer has a chance of being resisted against non NM/HNM/endgame bosses.
+* Many [[Weapon Skills]] have had their properties changed, but their in-game tooltips do not reflect these changes as of now.
+* Most elemental weapon skills have been changed to [[Hybrid Weapon Skills|hybrid]] and will stack with [[Sneak Attack]]. 
+<!--
+**List of WS that where changed to Hybrid: 
+***Blade: Chi
+***Blade: Ei
+***Blade: Teki
+***Blade: To
+***Burning Blade
+***Dark Harvest
+***Freezebite
+***Frostbite
+***Hot Shot
+***Raiden Thrust
+***Red Lotus Blade
+***Seraph Blade
+***Shadow of Death
+***Shining Blade
+***Thunder Thrust-->
+----
+Click on a weapon type to display changes to the respective Weapon Skills
+<center>
+{{Collapsible_Toggle|identifier=archery|text=Archery}} - 
+{{Collapsible_Toggle|identifier=axe|text=Axe}} - 
+{{Collapsible_Toggle|identifier=club|text=Club}} - 
+{{Collapsible_Toggle|identifier=dagger|text=Dagger}} - 
+{{Collapsible_Toggle|identifier=great-axe|text=Great Axe}} - 
+{{Collapsible_Toggle|identifier=great-katana|text=Great Katana}} - 
+{{Collapsible_Toggle|identifier=great-sword|text=Great Sword}} - 
+{{Collapsible_Toggle|identifier=hand-to-hand|text=Hand-to-Hand}} - 
+{{Collapsible_Toggle|identifier=katana|text=Katana}} - 
+{{Collapsible_Toggle|identifier=marksmanship|text=Marksmanship}} - 
+{{Collapsible_Toggle|identifier=polearm|text=Polearm}} - 
+{{Collapsible_Toggle|identifier=scythe|text=Scythe}} - 
+{{Collapsible_Toggle|identifier=staff|text=Staff}} - 
+{{Collapsible_Toggle|identifier=sword|text=Sword}}
+</center>
+
+{{Collapsible_Content|identifier=archery|
+====[[:Category:Archery|Archery]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Archery" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+{{Collapsible_Content|identifier=axe|
+====[[:Category:Axes|Axe]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Axes" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+{{Collapsible_Content|identifier=club|
+====[[:Category:Clubs|Club]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Clubs" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+{{Collapsible_Content|identifier=dagger|
+====[[:Category:Daggers|Dagger]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Daggers" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+{{Collapsible_Content|identifier=great-axe|
+====[[:Category:Great Axes|Great Axe]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Great Axes" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+{{Collapsible_Content|identifier=great-katana|
+====[[:Category:Great Katana|Great Katana]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Great Katana" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+{{Collapsible_Content|identifier=great-sword|
+====[[:Category:Great Swords|Great Sword]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Great Swords" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+{{Collapsible_Content|identifier=hand-to-hand|
+====[[:Category:Hand-to-Hand|Hand-to-Hand]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Hand-to-Hand" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+{{Collapsible_Content|identifier=katana|
+====[[:Category:Katana|Katana]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Katana" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+{{Collapsible_Content|identifier=marksmanship|
+====[[:Category:Marksmanship|Marksmanship]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Marksmanship" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+{{Collapsible_Content|identifier=polearm|
+====[[:Category:Polearms|Polearm]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Polearms" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+{{Collapsible_Content|identifier=scythe|
+====[[:Category:Scythes|Scythe]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Scythes" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+{{Collapsible_Content|identifier=staff|
+====[[:Category:Staves|Staff]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Staves" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+{{Collapsible_Content|identifier=sword|
+====[[:Category:Swords|Sword]]====
+{{#cargo_query:
+|tables=WeaponSkills
+|where=WeaponType="Swords" AND HorizonChanges IS NOT NULL
+|fields=Name=Weapon Skill,HorizonChanges=Horizon Changes
+}}
+}}
+
+----
+
+=== Signet ===
+<section begin=Signet/><ul><li class="toaulive"> The [[Treasures of Aht Urhgan]] Signet bonus changes are in effect.</li>
+<li class="toaulive">[[Signet]] now gives a bonus to [[HP Recovered While Healing]].</li>
+<li> Signet gives a bonus to EXP rates in [[Chains of Promathia|CoP]] areas only, at the following level ranges:
+<ul><li>Level 50-59: 5%</li>
+<li>Level 60-69: 7.5%</li>
+<li>Level 70-75: 10%</li></ul>
+<li>There is an additional bonus to EXP when XPing in a "territory not controlled by your home nation" of 5% starting at level 50, but only in [[Chains of Promathia|CoP]] areas.</li></ul><section end=Signet/>
+
+== Spells and Magic ==
+<section begin=MP Recovered While Healing/>* Base [[MP Recovered While Healing|MP recovery rate]] starts at 12 per tick. Each [[tick]] thereafter increases by 4. This effect was originally 1 per tick.
+* Certain jobs have a further increase to their base [[MP Recovered While Healing|MP recovery rate]] and MP/tick scaling, due to increases to the scaling of [[Clear Mind]]. 
+At level 75, these changes are:
+** [[Red Mage]]: +1 for a total of 5 [[MP Recovered While Healing|MP recovery rate]] scaling per tick
+** [[Black Mage]] and [[Summoner]]: +2 for a total of 6 [[MP Recovered While Healing|MP recovery rate]] scaling per tick
+** [[White Mage]]: +3 for a total of 7 [[MP Recovered While Healing|MP recovery rate]] scaling per tick<section end=MP Recovered While Healing/>
+<section begin=Magic Burst/>* [[Magic Burst]]s receive an extra +35 [[Magic Accuracy]], +35 [[Magic Attack]] and reduced [[Enmity|enmity]] generation, except on notorious monsters.<section end=Magic Burst/>
+
+=== White Magic ===
+<section begin=White Magic/>Changes to the [[:Category:White Magic|White Magic]] spells: 
+<section begin=Reraise/>* [[Reraise]] is available to [[White Mage]]s at level 25 instead of 33.<section end=Reraise/>
+<section begin=Haste/>* [[Haste]] has had its recast reduced from 20 to 18 seconds. - [[Patch Notes: April 14th 2023|Version 1.1]]<section end=Haste/>
+<section begin=Banish/>* The effect of [[Banish]] has been 'era+'ed' to inhibit the target undead monster's TP gain.<section end=Banish/>
+<section begin=Protectra V/>* [[Protectra V]] is now obtained via scrolls and not merits.<section end=Protectra V/>
+<section begin=Shellra V/>* [[Shellra V]] is now obtained via scrolls and not merits.<section end=Shellra V/>
+<section begin=Refresh/>* The cost of [[Refresh]] has been increased from 40 to 50 [[MP]] and its recast time has been decreased from 18 to 16 seconds. - [[Patch Notes: April 14th 2023|Version 1.1]]<section end=Refresh/>
+<section begin=Enlight/>* [[Enlight]] wasn't originally in the [[Chains of Promathia]] era and was a level 85 spell on retail when it did become available. On Horizon is can be learnt by [[Paladin]]s at level 40.<section end=Enlight/><section end=White Magic/>
+<section begin=Slow II/>* [[Slow II]] is learnable via scroll.<section end=Slow II/>
+<section begin=Paralyze II/>* [[Paralyze II]] is learnable via scroll.<section end=Paralyze II/>
+<section begin=Dia III/>* [[Dia III]] is learnable via scroll.<section end=Dia III/>
+
+=== Black Magic ===
+<section begin=Elemental Magic/>* ''Some'' [[:Category:Elemental Magic|Elemental magic]] scrolls bought from vendors have reduced prices. The amount needs further investigation but appears to be around 40%. Scrolls with reduced prices can be found to be marked as such on the wiki.<section end=Elemental Magic/>
+<section begin=Elemental Debuffs/>* [[Elemental Debuff]]s have had their base duration extended from 90 seconds to 120 seconds.<section end=Elemental Debuffs/>
+<section begin=Poison/>* [[Poison]]'s [[Damage Over Time|DoT]] effect has been increased from 1 per [[tick]] to 4 per [[tick]].<section end=Poison/>
+<section begin=Bind/>* [[Bind]]'s duration is floored at 5 seconds.<section end=Bind/>
+<section begin=Ancient Magic II/>* Ancient Magic II spells are learned via scroll.  Group 2 [[Merit Points]] reduce recast time.<section end=Ancient Magic II/>
+<section begin=Bio III/>* [[Bio III]] is learned via scroll.  Group 2 [[Merit Points]] affect potency and duration.<section end=Bio III/>
+
+=== Ninjutsu ===
+<section begin=Ninjutsu/>
+* Ichi elemental wheel spells are learnable at 12 but only usable from level 15.
+* [[Ninjutsu]] [[Magic Burst]]s receive an extra +50 [[Magic Accuracy]], +35 [[Magic Attack]] and reduced [[Enmity|enmity]] generation, except on notorious monsters. {{verification}}
+*The resistance down on an elemental [[ninjutsu]] is -30 regardless of the level of the ninjutsu.  The resistance down lasts for 15 seconds, but can be potentially extended to 25 seconds through [[Merit Points]].
+* Elemental wheel spells receiving a total of +25 magic accuracy. - [[Patch_Notes:_April_14th_2023 #JOB BALANCING|Update 1.1]]
+* All Ninjustu have +15 magic accuracy, with a further +10 for all elemental wheel spells (+25 m.acc total.) This effect is increased to +50 extra magic accuracy on [[Magic Burst Bonus|magic bursts]], on all [[:Category:Notorious Monsters|non-notorious monsters]].
+<section begin=Hojo:Ni/>* [[Hojo: Ni]] provides +40 [[Enmity|cumulative enmity (CE)]] and +450 [[Enmity|volatile enmity (VE)]]. Essentially CE is halved and VE is doubled compared to retail/era.<section end=Hojo:Ni/>
+<section begin=Kurayami:Ni/>* [[Kurayami: Ni]] provides +40 [[Enmity|cumulative enmity (CE)]] and +450 [[Enmity|volatile enmity (VE)]]. Essentially CE is halved and VE is doubled compared to retail/era.<section end=Kurayami:Ni/><section end=Ninjutsu/>
+
+== Weapons ==
+* Many weapons have had weapon skill properties changed to increase their skill chain utility.
+<section begin=Clubs/>* Paladins are able to use most [[Clubs|clubs]] now. Changes have also been made to club weapon skills to make them a viable choice for Paladins.<section end=Clubs/>
+* {{Item Tooltip|Octave Club}} has been changed and has replaced the Kraken Club.
+<!--*Added [[Malignance Sword]].-->
+* Relic weapons: please review the [[Relic Weapons]] page for a complete list of known changes.
+* {{Item Tooltip|Rune Chopper}} had its Latent Effect: Haste reduced from 9% to 2%.
+=== Thief ===
+* {{Item Tooltip|Thief's Knife}} has been significantly reworked and now provides +18 [[damage]] and [[Occasionally Attacks X Times|occassionally attacks 2 times]]. The original [[Treasure Hunter]] +1 effect can now be obtained via {{Item Tooltip|Nanaa's Charm}}.
+
+=== Samurai ===
+<section begin=Hagun/>* [[Hagun]]: DMG decreased from 75 to 64.
+** As a result of the damage change, Hagun's DPS has decreased from 10 to 8.53 with a major indirect nerf to weapon skills due to the high natural Attack+ percentages given by weapon skills such as [[Tachi: Gekko]].<section end=Hagun/>
+=== Ninja ===
+* The recipes for [[Shuriken]], [[Juji Shuriken]], [[Manji Shuriken]] and [[Fuma Shuriken]] have been changed. 
+** These can now be bundled together in a pouch, each via a synthesis recipe.
+
+== Armor ==
+<section begin=Shields/>* [[Shield]]s have been buffed and now have an increased block rate and damage reduction when blocking.<section end=Shields/>
+* All earrings from [[RoZ Rewards]] have been changed.
+* All rings from [[CoP Rewards]] have been changed except for {{Item Tooltip|Rajas Ring}}.
+* {{Item Tooltip|Stealth Earring}} now has the ''enhances "[[Dual Wield]]" effect'' that {{Item Tooltip|Suppanomimi}} used to have.
+* Added [[Shepherd's Armor Set]] for pet jobs.
+* {{Item Tooltip|Speed Belt}} effect reduced to 5% haste.
+* [[Armada Hauberk Set|Armada Set]] gained a small haste buff of +1~2% per piece.
+* Many of the [[LVL 30 JSE Accessories]] for [[Support Job]]s were modified in an attempt attempt to offer more optimal enhancements.
+** WHM: Mace Belt has been renamed to {{Item Tooltip|Healer's Belt}}, and its [[latent effect]] was changed from ''[[Club Skill]] +5'' to ''[[Enmity]] -2''.
+** THF: Dagger Belt has been renamed to {{Item Tooltip|Pilferer's Belt}}, and its latent effect was changed from ''[[Dagger Skill]] +5'' to ''[[Accuracy]] +3''.
+** PLD: {{Item Tooltip|Shield Belt}} latent effect was changed from ''[[Shield Skill]] +5'' to ''Enhances [[Shield Mastery]]''.
+** BRD: {{Item Tooltip|Song Belt}} latent effect was changed from ''[[Singing Skill]] +5'' to ''Madrigal +1''.
+** RDM: Rapier Belt has been renamed to {{Item Tooltip|Warlock's Belt}}, and its latent effect was changed from ''[[Sword Skill]] +5'' to ''[[Enspell|Enspell Damage]] +3''.
+** BLM: Staff Belt has been renamed to {{Item Tooltip|Wizard's Belt}}, and its latent effect was changed from ''[[Staff Skill]] +5'' to ''[[INT]] +2''.
+** DRG: Lance Belt has been renamed to {{Item Tooltip|Wyvern Belt}}, and its latent effect was changed from ''[[Polearm Skill]] +5'' to ''[[Haste]] +2%''.
+* Most [[Artifact Armor]] has had a small stat buff added to "less desireable pieces".
+* All [[Artifact Weapons]] were changed to level 40, with some adjustments.
+* Many endgame armor pieces were modified from era (e.g. {{Item Tooltip|Koenig Cuirass}}).
+* Some [[Conquest]] items were changed.
+* [[Exp Rings]] have been modified to provide more charges, reduced cooldowns etc. See page for further information.
+* Level 30 [[latent effect]] earrings have been changed.
+* {{Item Tooltip|Yinyang Robe}} now drops in the BCNM [[Waking the Beast]]. - [[Patch Notes: June 4th 2023|Update 06/04/2023]]
+* The recipe for {{Item Tooltip|Sonic Belt}} has been adjusted.
+* {{Item Tooltip|Checkered Scarf}} now reduces maximum HP by 12 instead, and gives +1 to HP and MP recovered while healing.
+<div class="toau">
+* <section begin="Hydra Mask"/>{{Item Tooltip|Hydra Mask}} gains '''Resist all elements +8''' and '''[[Wyvern]]: [[Magic Damage Taken|Magic damage taken]] -3%'''. The wearer's '''[[Magic Damage Taken|Magic damage taken]]''' is improved from '''-2%''' to '''-3%'''.<section end="Hydra Mask"/>
+* <section begin="Hydra Mask +1"/>{{Item Tooltip|Hydra Mask +1}} gains '''Resist all elements +10''' and '''[[Wyvern]]: [[Magic Damage Taken|Magic damage taken]] -4%'''. The wearer's '''[[Magic Damage Taken|Magic damage taken]]''' is improved from '''-3%''' to '''-4%'''.<section end="Hydra Mask +1"/>
+</div>
+<div class="toau">
+* <section begin="Hydra Mail"/>[[Hydra Mail]]: {{stat|Dex|+5}} increased from {{stat|Dex|+3}}, {{stat|Agi|+5}} increased from {{stat|Agi|+3}}, {{stat|Accuracy|+10}} increased from {{stat|Accuracy|+9}}, and {{stat|Evasion|+10}} increased from {{stat|Evasion|+9}}. Adds {{stat|wyvern:}} {{stat|damage taken|-4%}}.<section end="Hydra Mail"/>
+* <section begin="Hydra Mail +1"/>[[Hydra Mail +1]]: {{stat|Dex|+6}} increased from {{stat|Dex|+4}}, {{stat|Agi|+6}} increased from {{stat|Agi|+4}}, {{stat|Accuracy|+12}} increased from {{stat|Accuracy|+10}}, and {{stat|Evasion|+12}} increased from {{stat|Evasion|+10}}. Adds {{stat|wyvern:}} {{stat|damage taken|-5%}}.<section end="Hydra Mail +1"/>
+<div class="toau">
+* <section begin="Hydra Finger Gauntlets"/>[[Hydra Finger Gauntlets]]: Adds {{stat|Store TP|+7}} and {{stat|physical damage taken|-2%}}. {{stat|Evasion|+3}} reduced from {{stat|Evasion|+5}}. {{stat|magic damage taken|-3%}} improved from {{stat|magic damage taken|-2%}}. Removes {{stat|Vit|+3}}, {{stat|Attack|+3}}, and {{stat|Accuracy|+5}}.<section end="Hydra Finger Gauntlets"/>
+* <section begin="Hydra Finger Gauntlets +1"/>[[Hydra Finger Gauntlets +1]]: Adds {{stat|Store TP|+9}} and {{stat|physical damage taken|-2%}}. {{stat|Accuracy|+2}} reduced from {{stat|Accuracy|+6}}, and {{stat|Evasion|+4}} reduced from {{stat|Evasion|+6}}. {{stat|magic damage taken|-4%}} improved from {{stat|magic damage taken|-3%}}. Removes {{stat|Vit|+4}} and {{stat|Attack|+4}}.<section end="Hydra Finger Gauntlets +1"/>
+<div class="toau">
+* <section begin="Hydra Greaves"/>[[Hydra Greaves]]: {{stat|Vit|+3}} increased from {{stat|Vit|+2}}, {{stat|Agi|+3}} increased from {{stat|Agi|+2}}, {{stat|Accuracy|+4}} increased from {{stat|Accuracy|+2}}, {{stat|Attack|+4}} increased from {{stat|Attack|+2}}, and {{stat|Evasion|+4}} increased from {{stat|Evasion|+2}}. {{stat|physical damage taken|-3%}} improved from {{stat|physical damage taken|-2%}}.<section end="Hydra Greaves"/>
+* <section begin="Hydra Greaves +1"/>[[Hydra Greaves +1]]: {{stat|Vit|+4}} increased from {{stat|Vit|+3}}, {{stat|Agi|+4}} increased from {{stat|Agi|+3}}, {{stat|Accuracy|+5}} increased from {{stat|Accuracy|+3}}, {{stat|Attack|+5}} increased from {{stat|Attack|+3}}, and {{stat|Evasion|+5}} increased from {{stat|Evasion|+3}}. {{stat|physical damage taken|-4%}} improved from {{stat|physical damage taken|-3%}}.<section end="Hydra Greaves +1"/>
+</div>
+
+=== Feet ===
+<section begin=Trotter Boots/>* {{Item Tooltip|Trotter Boots}} can now be obtained via HorizonXI's custom [[HENM|Hyper Empty Notorious Monsters]] (HENM).<section end=Trotter Boots/>
+<section begin=Evokers Boots/>* {{Item Tooltip|Evoker's Boots}} now have the [[Hidden Effect]] Summoning Magic Casting time -1.<section end=Evokers Boots/>
+
+=== Rings ===
+<section begin=Nation Ring/>* Players no longer start with their corresponding nation's ring (e.g. {{Item Tooltip|San d'Orian Ring}}). Instead they are awarded upon completing Nation Mission 1-3.<section end=Nation Ring/>
+
+
+=== Back ===
+{{#section:Wyvern Mantle|Wyvern Mantle}}
+
+=== Custom Gear ===
+* [[Buffalo Armor Set]]
+* {{Item Tooltip|Carapace Bullet}}
+* {{Item Tooltip|Deflecting Band}}
+* {{Item Tooltip|Dilation Ring}}
+* {{Item Tooltip|Ducal Aketon}}
+* {{Item Tooltip|Horus's Helm}}
+* {{Item Tooltip|Luftpause Mark}}
+* {{Item Tooltip|Overlord's Ring}}
+* {{Item Tooltip|Rucke's Rung}}
+* {{Item Tooltip|Sprinter's Belt}}
+
+== Items ==
+* [[Notorious Monster]]s drop the non RA/EX versions of gear and weapons if possible. 
+* Warp rings are no longer usable.
+* {{Item Tooltip|Laurel Crown}} is now cosmetic and not able to teleport.
+* Some items are stackable that weren't in era, e.g. {{Item Tooltip|Yagudo Necklace}}.
+* Coffer Keys and Chest Keys have had their drop rates adjusted across the board. It is believed that they have been increased from "Rare" to "Uncommon". Further drop rate information can be founds [[Drop Rate|here]]. - [[Patch Notes: December 24th 2022]]
+
+=== Drops ===
+* [[Kirin]] now drops {{Item Tooltip|Shellra V}}. 
+
+=== Food ===
+* {{Item Tooltip|Tuna Sushi}} and {{Item Tooltip|Fatty Tuna Sushi}} reworked to give positive stats to [[pets]]. - [[Patch Notes: January 20th 2023|01/20/2023]]
+* {{Item Tooltip|Ikra Gunkan}} and its {{Item Tooltip|Ikra Gunkan +1|+1}} version have been reworked to better suit tanking roles.
+
+== Quests, Missions, & Battlefields ==
+=== New Quests ===
+* [[Fill In]] awards the custom item {{Item Tooltip|Nanaa's Charm}}, which grants [[Treasure Hunter]] +1.
+* [[Dyer's Woad Quest]] added.  - [[Patch Notes: April 14th 2023|updated version 1.1]]
+* Custom [[Omni Aketon|quest]] for the multi-nation {{Item Tooltip|Ducal Aketon}}.
+
+=== Quest Updates ===
+* Some quest cooldowns removed, allowing them to be repeated quickly.
+* [[Chocobo's Wounds]] now only requires about one Vana'diel hour (2.5 minutes) between trades.
+* [[Eco-Warrior (Bastok)]], [[Eco-Warrior (San d'Oria)]] and [[Eco-Warrior (Windurst)]] now award {{Item Tooltip|Dragon Chronicles}} upon completion, which awards between 4,500 and 9,000 EXP.
+
+=== Battlefields ===
+<!--What are the specific changes?-->
+* Multiple adjustments made to loot pools of various [[BCNM]]s. Notable changes are:
+** {{Item Tooltip|Protectra V}} and {{Item Tooltip|Shellra V}}
+** {{Item Tooltip|Enlight}}
+
+* New HorizonXI specific items added to [[BCNM]]s such as:
+** [[Shepherd's Armor Set]]
+
+==== BCNM ====
+* [[Early Bird Catches The Wyrm]] - {{Item Tooltip|Wyrm Beard}} now has a 50% chance of dropping. - [[Patch Notes: April 14th 2023|Update 1-1]]
+* [[Steamed Sprouts]] - {{Item Tooltip|Morbolger Vine}} now has a chance to drop. - [[Patch Notes: April 14th 2023|Update 1-1]]
+<section begin=Under Observation/>* Scrolls no longer drop from [[Under Observation]] and have been replace with items "that fetch reasonable amounts of gil from vendor NPCs". - [[Patch Notes: June 15th 2024| Version 1.2.2]]<section end=Under Observation/>
+
+==== KSNM ====
+* [[Contaminated Colosseum]] - {{Item Tooltip|Morbolger Vine}} now has a 100% chance of dropping. - [[Patch Notes: April 14th 2023|Update 1-1]]
+
+==== Quest Battlefields ====
+* [[Waking the Beast]]
+** Difficulty of the fight has been increased. - [[Patch Notes: June 4th 2023|Update 06/04/2023]]
+** Drop rate of weapons has been increased. - [[Patch Notes: June 4th 2023|Update 06/04/2023]]
+** {{Item Tooltip|Yinyang Robe}} has been added as a possible drop. - [[Patch Notes: June 4th 2023|Update 06/04/2023]]
+
+== Custom Content ==
+=== HENM ===
+* The custom tiered endgame content [[HENM|Hyper Empty Notorious Monsters]] (HENM) has been added. Adventurers must obtain a certain amount of clears of each tier before they can progress to the next. Various rewards are available from each tier. Progress is reset weekly.
+=== Horizon Adventuring Assistance Program===
+* The [[Horizon Adventuring Assistance Program]] (HAAP) was added to reward players who have cleared certain content when they help those who haven't.
+
+=== Horizon Adventurer Rewards Program ===
+* [[Horizon Adventurer Rewards Program]] (HARP) was implemented to reward players who assisted in the beta testing of HorizonXI.
+
+== Crafting, Gathering, Fishing ==
+* Many gathered items (such as ores) are now stackable.
+* Many 'NPC-able' recipes e.g. {{Item Tooltip|Darksteel Pick}} have had their NPC price reduced.
+* The delay between HELM attempts has been lowered by 1 second. - [[Patch Notes: January 6th 2023|01/06/2023]]
+
+=== Chocobo Digging ===
+* Now has visible skill-up messages when undertaking in the activity.
+* Real life daily limit in place.
+* Loot pools have been changed to increase the amount of profitable locations. - [[Patch Notes: April 14th 2023|Version 1.1]]
+
+=== Clamming ===
+* Clamming loot pools have been reworked to make the activity more worthwhile. 
+
+=== Excavation ===
+* Pools in [[Tahrongi Canyon]], [[Maze of Shakhrami]], [[Attohwa Chasm]] and [[Korroloka Tunnel]] have been adjusted to increase the value of harvesting. - [[Patch Notes: April 14th 2023|Version 1.1]]
+
+=== Fishing ===
+<section begin=Fishing/>* [[Fishing]] is only available once adventurers have obtained level 15.
+* Fishing Pools respawn at set intervals, thought to be at the in-game time of: 00:00, 4:00, 6:00, 7:00, 17:00, 18:00 and 20:00, but needs verification. {{verification}}
+* The log will say you have Moghancement: Fishing Skill HorizonXI specific changes as a HorizonXI QoL change so you can recognize it's working as a +1 fishing skill.<section end=Fishing/>
+
+=== Harvesting ===
+* Pools in [[West Sarutabaruta]] and [[Giddeus]] have been adjusted to increase the value of harvesting. - [[Patch Notes: April 14th 2023|Version 1.1]]
+* May now be done in [[Beaucedine Glacier]]. - [[Patch Notes: April 14th 2023|Version 1.1]]
+* [[Sickle|Sickles]] no longer break but only when an adventurer is wearing the full [[Field Tunica Set]].
+
+=== Logging ===
+* Pools in [[Buburimu Peninsula]], [[Lufaise Meadows]], [[Misareaux Coast]], [[Yuhtunga Jungle]] and [[Yhoator Jungle]] have been adjusted to increase the value of logging. - [[Patch Notes: April 14th 2023|Version 1.1]]
+
+=== Mining ===
+* [[Oldton Movalpolos]] and [[Newton Movalpolos]] Mining Points have had their item pools adjusted to increase the value of mining in these zones. - [[Patch Notes: April 14th 2023|Version 1.1]]
+
+== Monsters ==
+<section begin=Treants/>* The monster family [[:category:Treants|Treants]] are now weak to [[Slashing|slashing]] damage. - [[Patch Notes: November 17th 2023|Patch 1.2 part 1]]<section end=Treants/>
+<section begin=Morbols/>* The monster family [[:Category:Morbols|morbols]] are now weak to [[Slashing|slashing]] damage. - [[Patch Notes: November 17th 2023|Patch 1.2 part 1]]<section end=Morbols/>
+<section begin=Funguars/>* The monster family [[:Category:Funguars|funguars]] are now weak to [[Slashing|slashing]] damage. - [[Patch Notes: November 17th 2023|Patch 1.2 part 1]]<section end=Funguars/>
+<section begin=Crabs/>* The monster family [[:Category:Crabs|crabs]] are now weak to [[Blunt|blunt]] damage. - [[Patch Notes: November 17th 2023|Patch 1.2 part 1]]<section end=Crabs/>
+<section begin=Uragnites/>* The monster family [[:Category:Uragnites|uragnites]] are now weak to [[Blunt|blunt]] damage. - [[Patch Notes: November 17th 2023|Patch 1.2 part 1]]<section end=Uragnites/>
+<section begin=beastmens seal/>* Beastmen seals weren't storable with [[Shami]] until September 2008. [https://www.bg-wiki.com/ffxi/The_History_of_Final_Fantasy_XI/2008 source].
+* [[Beastmen's Seal]]s no longer drop from any level one mobs. - [[Patch Notes: June 15th 2024|Patch 1.2.2]]<section end=beastmens seal/>
+<section begin=kindreds seal/>* Kindred seals weren't storable with [[Shami]] until September 2008. [https://www.bg-wiki.com/ffxi/The_History_of_Final_Fantasy_XI/2008 source].<section end=kindreds seal/>
+
+=== Regular Mobs ===
+* Mob distribution in some zones has been changed. Instances of both mobs being moved and/or removed.
+* [[:Category:Horizon Custom Content/Monsters|New mobs]] have been added to many zones to increase the amount of xping locations.
+* The respawn time of certain [[Respawn Time|Dungeon]] type mobs has been reduced to 5 minutes, in line with outdoor zone respawn times. However, this change is '''NOT''' across the board for all dungeon mobs. Mob pages are continually updated when respawn times are verified.
+
+=== Notorious Monsters ===
+* The [[???]] for [[Forced Spawn]] notorious monsters have a respawn time of 2 minutes, as of [[Patch Notes: November 17th 2023|Patch 1.2 part 1]].
+** "The respawn time of many ???s across the world has been lowered to 2 minutes. This includes many ???s used in end game content." It is currently unknown whether this change applies to some or all NM ??? pops.
+* Various notorious monsters have claimshield in place.
+
+== Endgame ==
+===Sky===
+* [[Despot]] has a 2 hour cooldown (reduced) before the lottery re-opens. - [[Patch Notes: April 14th 2023|Version 1.1]]
+* [[Steam Cleaner]] has a 2 hour cooldown (reduced) before the lottery re-opens. - [[Patch Notes: April 14th 2023|Version 1.1]]
+* [[Zipacna]] respawns 2-3 hours (reduced) after its previous death. - [[Patch Notes: April 14th 2023|Version 1.1]]
+* [[Mother Globe]] respawns 2-3 hours (reduced) after its previous death. - [[Patch Notes: April 14th 2023|Version 1.1]]
+* [[Faust]] respawns 2-3 hours (reduced) after its previous death. - [[Patch Notes: April 14th 2023|Version 1.1]]
+* [[Curtana]] ??? respawns 2-3 hours (reduced) after being found. - [[Patch Notes: April 14th 2023|Version 1.1]]
+* [[Ullikummi]] is force spawned by trading a diorite to its corresponding ???. - [[Patch Notes: April 14th 2023|Version 1.1]]
+* [[Diorite]]s drop from [[Aura Statue]]s at a rate of 1%. - [[Patch Notes: April 14th 2023|Version 1.1]]
+
+* [[Kirin]] will always drop at least 1 abjuration. - [[Patch Notes: April 14th 2023|Version 1.1]]
+
+===Limbus===
+* [[Cosmo-Cleanse]] can be obtained just short of every 72 hours. - [[Patch Notes: April 14th 2023|Version 1.1]]
+* The Armoury Crate spawned by defeating [[Proto-Ultima]] will now always drop a [[Silver Chip]], [[Cerulean Chip]], or [[Orchid Chip]]. - [[Patch Notes: April 14th 2023|Version 1.1]]
+* The damage of Proto-Ultima's [[Holy II]] has been increased. - [[Patch Notes: April 14th 2023|Version 1.1]]
+* [[Citadel Buster]] will now always begin casting once Proto-Ultima reaches 20% health. - [[Patch Notes: April 14th 2023|Version 1.1]]
+
+===Sea===
+* [[Ix'aern (Dark Knight)]] will not reraise itself more than 20 times per spawn. - [[Patch Notes: April 14th 2023|Version 1.1]]
+
+===Dynamis===
+* The level range of monsters in Dynamis zones has been tightened and the maximum level range of Dynamis monsters has been increased. The purpose of this change is to make Dynamis monsters more challenging. - [[Patch Notes: April 14th 2023|Version 1.1]]
+* New NPCs added: [[Billrox]], [[Bronzvox]] and [[Sheltrix]]. Each will convert one hundred pieces of Dynamis Currency into single pieces of currency. - [[Patch Notes: April 14th 2023|Version 1.1]]
+<section begin=Dynamis/>* [[Dynamis - Bastok]], [[Dynamis - Jeuno]], [[Dynamis - San d'Oria]] & [[Dynamis - Windurst]] have had their average ancient currency yields lowered by roughly eight percent. - [[Patch Notes: June 15th 2024|Version 1.2.2]]
+* [[Dynamis - Buburimu]], [[Dynamis - Qufim]] & [[Dynamis - Valkurm]] have had their average ancient currency yields increased by roughly sixty percent. - [[Patch Notes: June 15th 2024|Version 1.2.2]]<section end=Dynamis/>
+==== [[Dynamis Lord]] ====
+* Now drops at least ONE 100 piece.
+
+==== [[Dynamis - Tavnazia]] ====
+* The era+ item {{Item Tooltip|Sack of Dream Sand}} has been confirmed to drop from [[Diabolos Heart]]. It is suspected but needs verification that is also drops from Diabolos Club/Diamond/Spade.
+* The era+ items [[Dream Collar]] and [[Dream Ribbon]] are confirmed to drop from [[Diabolos Spade]]. It is suspected but needs verification that is also drops from Diabolos Club/Diamond/Heart.
+
+=== HNM ===
+*The three kings have been moved back to their original zones of [[Dragon's Aery]], [[Valley of Sorrows]], and [[Behemoth's Dominion]]. - [[Patch Notes: November 17th 2023|Update  11/17/2023]]
+* The three kings have had their respawn changed to be every 22-23 hours, with 10 minute spawn windows.
+==== [[Aspidochelone]] ====
+* Now drops the custom item {{Item Tooltip|Ancient Adamantoise Egg}}.
+* See [[Aspidochelone|Aspid's]] page for information it's era+ mechanic changes.
+<!-- content add and then removed. Preserving as a record and incase changes are remade.
+*<s> Each of the 3 ground kings can spawn in multiple zones. "These monsters will now only spawn in one small area in each of the relative zones that they spawn in." - </s> [[Patch Notes: June 4th 2023|Update 06/04/2023]]
+* <s>Each of the 3 ground kings will always spawn in a different location to the previous day. "Fearful of the Adventuring alliance's activities the three ground kings now refuse to spawn in the same zone twice in a row." - </s> [[Patch Notes: June 4th 2023|Update 06/04/2023]]
+* <s>[[Behemoth]] & [[King Behemoth]] can spawn in [[Qufim Island]]</s> - removed in [[Patch Notes: June 4th 2023|Update 06/04/2023]]-->
+
+== System ==
+* All [[Auction House]]s are linked and each character has a 21 item limit.
+* [[Bazaar]] tax is set to 10% across the world.
+* Yells only appear in the log whilst being inside a town or city zone.
+* Items inside a players [[Storage]] can be accessed in [[Jeuno]] as well as their home nation.
+<section begin=Mog Wardrobe/>* [[Mog Wardrobe]]s 1 & 2 can be obtained via certain progress conditions. See the page for further details. This wasn't available until well beyond Horizon's current era.
+* Wardrobe 8 is now available but only for storing cosmetic items. - [[Patch Notes: November 17th 2023| Version 1.2]]<section end=Mog Wardrobe/>
+<section begin=Mog Satchel/>* [[Mog Satchel]] is available by linking your [https://discord.gg/horizonxi Discord] and in-game character.<section end=Mog Satchel/>
+* Players may have 2 linkshells equipped at the same time.
+* Key items sort into 4 categories: [[:Category:Temporary_Key_Items|Temporary Key Items]], [[:Category:Permanent Key Items|Permanent Key Items]], [[:Category:Claim_Slips|Claim Slips]] and [[:Category:Magical_Maps|Magical Maps]]. These categories were only introduced in June 2007 ([https://www.bg-wiki.com/ffxi/The_History_of_Final_Fantasy_XI/2007 source]).
+* Macro books were only introduced in November 2007 ([https://www.bg-wiki.com/ffxi/The_History_of_Final_Fantasy_XI/2007 source]).
+* [[Mog House]] exit cutscenes are disabled and Mog House home points are enabled.
+<section begin=rareex/>* [[Exclusive]] items '''cannot''' be delivered to characters on the same account unlike on retail where they can.<section end=rareex/>
+* {{Item Tooltip|Lynx Leather}} for the quest [[The Gobbiebag Part VII]] was only available during the Wings of the Goddess era but can be obtained on Horizon via the crafting of [[HENM]] drops.
+
+=== Commands ===
+<section begin=Commands/>* New [[:Category:Commands|command]] - [[Command/!unstuck|!unstuck]]
+* New [[:Category:Commands|command]] - [[Command/!uptime|!uptime]]
+* The command [[Command/bstpet|bstpet]] is available. It was only available much later than the CoP era.<section end=Commands/>
+
+=== NPCs: ===
+* All [[Outpost Teleportation]] NPCs have been located in their era accurate positions. Their locations were adjusted in December 2008 ([https://www.bg-wiki.com/ffxi/The_History_of_Final_Fantasy_XI/2008 source]).
+* New [[Outpost Teleportation]] NPCs have been added to Jeuno. See [[Twinkstix]]/[[Burnstix]]/[[Sprinkstix]].
+* Two new Warp Tarus have been added to [[Windurst Woods]] - [[Port Windurst]]. See [[Polo-Colo]]/[[Mumbo-Bumbo]].
+* The [[Chocobo]] rental NPCs in [[Yhoator Jungle]] and [[Eastern Altepa Desert]] are out of era, only being introduced in June 2007 ([https://www.bg-wiki.com/ffxi/The_History_of_Final_Fantasy_XI/2007 source])!
+* [[Nomad Moogle]]s in Selbina and Mhaura were only added in June 2008 ([https://www.bg-wiki.com/ffxi/The_History_of_Final_Fantasy_XI/2008 source]).
+
+== Claimed adjustments from their website. ==
+
+=== Server Settings ===
+
+* '''Launch Expansion''': Chains of Promathia ("CoP")
+* '''Level Cap''': 75
+* '''Launch Patch Date''': April 17, 2006 (day before ToAU update)
+* '''Accounts/Characters''': 1 account (single box) and 3 characters per IP address
+* '''Movement Speed''': 40 - Level 75 cap era default movement speed (-20% speed)
+* '''Experience Rates''': 1.0 - Wings of the Goddess (“WoTG”) EXP rates
+* '''Crafting Rates''': 1.0
+* '''Level Sync''': Launch System - Unlimited Sync with scaling penalty (see “System: Level Sync” section below)
+* '''Equipment Scaling (Level Sync)''': Disabled
+* '''Auction House''': Stocked by players - 21 item limit per character
+* '''Fishing''': Enabled
+* '''Gardening''': Enabled
+* '''Chocobo Digging''': Enabled
+* '''Dynamis''': CoP era with 71 hour lockout (reduced from 72), rumors state it is an entirely new system built by the devs from scratch.
+* '''Claim Shield''': Added to prominent NMs to provide a fair playing experience for all players. HorizonXI uses a lottery based claim shield system where each person has the opportunity to act on the mob once for a chance to claim the monster. After all players have acted and the claim window has closed, the monster will randomly select one person who acted on it and give them the claim. Multiple actions taken on a monster during the lottery do not increase your chances at claiming - each person can only enter the claim lottery once before the lottery window ends.
+* '''Inventory Expansions''': Mog Wardrobes 1 and 2, and Mog Satchel to be unlocked by completing certain objectives (see “System: Inventory Expansion” section below)
+* '''Treasure Hunter''': Era accurate (we used SE's official Treasure Hunter chart to build our system)
+* '''Era accurate drop rates''': Drop rates for all items have been adjusted to reflect the era experience more accurately
+
+== Verification Needed ==
+* [[Counterstance]] reduces more defense than normal and doesn't give any positive buffs.
+* Gravity movement speed issues. Fixed with update on 03/03/2023? {{Verification}}
+
+== Horizon/Retail DATs Comparison ==
+This section will be viewable following completion of the code rebase to ensure the highest accuracy of the data.

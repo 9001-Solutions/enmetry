@@ -1,0 +1,5 @@
+# Wiki snapshots are kept byte-for-byte as fetched.
+tools/tables/sources/** -text
+
+# Images are binary; never line-ending converted.
+*.png -text

@@ -1,0 +1,25 @@
+{{Job Ability
+| description = Consumes your own HP to enhance attacks.
+| job = Dark Knight
+| level = 30
+| recast = 5:00 {{changes | Retail Recast is 6:00}}
+| duration = 1 minute
+| range = 
+| notes = 
+* When activated by a [[Dark Knight]], each successful attack that lands (even for zero damage) will cause the user to lose 10% of his/her current [[HP]] and converts that amount directly into damage. This additional damage is added to the damage of the hit, not separately as with En-Spells.
+* When activated by a character with [[Dark Knight]] [[Support Job]], each successful attack that lands will cause the user to lose 10% of his/her current [[HP]] and converts '''half''' that amount directly into damage.
+* While active, this ability increases the user's [[accuracy]] by 25. [https://github.com/AirSkyBoat/AirSkyBoat/blob/staging/scripts/globals/effects/souleater.lua - source]
+* Using the ability generates a significant amount of [[enmity]]. The actual amount needs to be verified.
+* HP converted into damage for a [[Weapon Skill]] is calculated for all hits using the same initial HP (i.e. A four hit weaponskill like [[Guillotine]] will inflict 40% of current HP and damage dealt, not each hit successively).
+* Each merit into [[Muted Soul]] will decrease the amount of [[enmity]] from, exclusively, Souleater damage by a -[[enmity]] value of 10.
+<br>
+* Souleater is subject to physical damage modifiers, examples being open-mouthed [[Hpemde]](+100% damage), and [[Slimes]](-50% damage); additionally the modifiers for [[Damage Types|damage type]] (slashing, blunt, or piercing) based on the weapon used will affect the damage dealt by the ability--e.g., [[Skeleton|Skeletons]] take extra damage from Souleater when used with a [[Club]].
+<br>
+* The damage penalty of Souleater is '''not''' affected by [[Defense]] or [[VIT]], Damage Taken+/-% such as [[Defending Ring]](-10%) or [[Black Cuisses]](+13%), the Red Mage spells Phalanx or Phalanx II, -% Physical Damage Taken gear such as Earth Staff/Darksteel armor, -% Magic Damage Taken gear such as Coral Scale Mail, nor is it affected by the Paladin ability [[Sentinel]].
+* The damage penalty of Souleater can be nullified by [[Stoneskin]] for an amount equal to the HP equivalent that the Stoneskin provides.
+<br>
+* The ''Enhances "Souleater" Effect'', found on [[Chaos Burgeonet]]/[[Chaos Burgeonet +1]], [[Gloom Breastplate]], or [[Sable Cuisses]], adds an additional 2% to the effect, dealing 12% of the [[Dark Knight]]'s current [[HP]] instead of 10%. This enhancement does not stack from multiple pieces.
+* Neither [[Chaos Burgeonet]]/[[Chaos Burgeonet +1]], [[Sable Cuisses]], nor [[Gloom Breastplate]] pieces increase accuracy (single or combined) with Souleater active.
+| changes = Souleater
+| macro = /ja "Souleater" <me>
+}}

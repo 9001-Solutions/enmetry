@@ -1,0 +1,28 @@
+{{Item Sections}}
+[[Category:Artifact Armor]][[Category:Summoner]]
+<section begin="Item Image"/>{{Item Image|Evokersbracers.png|Evoker's Bracers}}<section end="Item Image"/>
+==Statistics==
+{{Item Statistics
+| type = Armor
+| name = Evoker's Bracers
+| tags = {{Rare}}{{Exclusive}}
+| slot = Hands
+| stats = {{stat|def|11}} {{stat|mp|+15}} {{stat|vit|+4}} <br>'''Occasionally converts damage taken<br>of avatar element to MP''' <br>{{stat|avatar}} {{stat|Enmity|-2}}
+| level = 54
+| jobs = [[SMN]]
+| set = Evoker's Attire Set
+| notes = '''Occasionally converts damage taken of avatar element to MP'''
+*If the Summoner takes damage by a mob of the same element as their avatar, they have a chance to absorb this into MP. 
+}}
+
+==Horizon Changes {{changes}}==
+{{HorizonChangesBox}}
+==Other Uses==
+{{Used In
+| resale price = none
+| artifact armor upgrade = Evoker's Bracers +1
+}}
+==How to Obtain==
+{{AH|Undeliverable Exclusive}}
+===Quests===
+*[[Borghertz's Calling Hands]] ([[Sea Serpent Grotto]] Coffer)

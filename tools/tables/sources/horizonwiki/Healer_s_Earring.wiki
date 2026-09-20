@@ -1,0 +1,33 @@
+{{Item Sections}}<section begin="Item Image"/>{{Item Image|Healer's Earring.png|Healer's Earring}}<section end="Item Image"/>
+==Statistics==
+{{Item Statistics
+| type = Armor
+| name = Healer's earring
+| tags = {{Rare}}
+| slot = Ear
+| stats = {{stat|Latent Effect:}}<br>{{stat|Enmity|-2}}
+| level = 30
+|notes = ''Latent effect''
+*Active while [[White Mage]] is set as your [[Support Job]].
+}}
+
+==Horizon Changes {{changes}}==
+{{HorizonChangesBox}}
+
+==Other Uses==
+{{Used In
+| resale price = {{Resale Price|1164|1230}}
+}}
+
+==How to Obtain==
+{{AH|Armor|Earrings}}
+===BCNM===
+{|class="horizon-table table-sm bcnm-table"
+!width="35%"| Name
+!width="45%"| Level Cap
+!width="30%"| Zone
+|- valign="top"
+| [[Creeping Doom]]
+|align="center"| Level 30, 15 minutes, 3 members
+| [[Balga's Dais]]
+|}

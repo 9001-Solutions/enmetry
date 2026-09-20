@@ -1,0 +1,29 @@
+{{Item Sections}}<section begin="Item Image"/>{{Item Image|Sattva.png|Sattva Ring}}<section end="Item Image"/>
+==Statistics==
+{{Item Statistics
+| type = Armor
+| icon id = 15544
+| tags = {{Rare}}{{Exclusive}}
+| slot = Ring
+| stats =  {{stat|HP|+15~30}} {{stat|VIT|+2~5}} {{stat|AGI|+2~5}} <br> {{stat|damage taken|-5%}}<br>{{stat|Enmity|+5}}
+| level = 30
+| notes =''Notes'':
+*The [[Vitality]] and [[Agility]] stats increase by 1 for every 15 levels, from +2 at level 30 up to +5 at level 75.
+*The [[HP]] stat increases by 1 for every 3 levels, from +15 at level 30 to +30 at level 75.
+: ''Level 30:'' VIT+2, AGI+2, HP+15.
+: ''Level 45:'' VIT+3, AGI+3, HP+20.
+: ''Level 60:'' VIT+4, AGI+4, HP+25.
+: ''Level 75:'' VIT+5, AGI+5, HP+30.
+}}
+==Horizon Changes {{changes}}==
+{{HorizonChangesBox|{{stat|Enmity|+5}} instead of {{stat|Enmity|+3}}|{{stat|damage taken|-5%}}|}}
+==Other Uses==
+{{Used In
+| resale price = none
+}}
+==How to Obtain==
+{{AH|Undeliverable Exclusive}}
+===Mission===
+*One of three rings that can be chosen as the final reward upon completion of [[Dawn|Promathia Mission 8-4 "Dawn"]]. ''(Choice of [[Rajas Ring]], [[Sattva Ring]], or [[Tamas Ring]].)''
+==Historical Background==
+"Sattva", or Sattwa, literally means existence or reality. It is a Sanskrit word that refers to the quality of goodness, orderliness, clarity, purity, and a healthy calmness. Sattva is linked to [[Vishnu's Cesti|Vishnu]] the Preserver in the Hindu Trimurti. Only through Sattva can one attain heaven. Of the three gunas in Samkhya, sāttvika "pure", [[Rajas Ring|rājasika]] "dim", and [[Tamas Ring|tāmasika]] "dark", it is the highest.

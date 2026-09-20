@@ -1,0 +1,78 @@
+[[File:Enlight.png]]
+{{Collapse Sections}}{{Infobox Magic
+| spell name = Enlight
+| icon = File:En-menu.webp
+| type = White Magic
+| skill = Divine
+| description = [[Enspell|Adds '''{{Light|light}}''' damage]] to your attacks.
+| mp = 24
+| element = Light
+| pld level = 40
+| casting time = 3
+| recast time = 30
+| affected targets = self
+| base duration = 180 seconds
+| horizon changes = was never available during 75 cap
+}}
+==Statistics==
+{{Item Statistics
+| type = Scroll
+| icon id = 4706
+| name = Scroll of Enlight
+| tags = {{Rare}}
+| jobs = PLD
+| level = 40 {{changes|Was never available during 75 cap.}}
+| description = Teaches the white magic Enlight.<br/>Adds light damage to your attacks.
+| notes = Damage from Enlight begins at a set point based on [[:category:Divine Magic|Divine Magic]] skill, then decreases by 1 damage per successful hit.  The effect expires automatically when the damage reaches zero.
+*The formula to determine base damage on HorizonXI is the step function:  {{Changes}}<br/>Divine Magic Skill < 150: (Divine Magic Skill/30)+10 <br/>Divine Magic Skill > 150: (Divine Magic Skill/15)+5
+*Provides an accuracy bonus equal to the additional effect/damage that enlight does.  The accuracy bonus currently does not show up in /checkparam.
+*Activates on each hit in an attack round -- such as due to [[Double Attack]], additional hits from weapons like [[Joyeuse]], and [[Dual Wield|offhanded weapons]].
+*Can be interrupted while casting this spell by attacks.
+*Provides enmity +10.  
+}}
+== Horizon Changes {{changes}} ==
+{{HorizonChangesBox|This spell wasn't originally available until after the 75 era of FFXI.|}}
+==How to Obtain==
+{{AH|Scrolls|White Magic}}
+===BCNM===
+{|class="horizon-table table-sm bcnm-table"
+! Name !! Zone !! Level !! Time !! Members
+|-
+| [[The Worm's Turn]] {{changes}}
+| [[Waughroon Shrine]]
+|align="center"| 40
+|align="center"| 30 minutes
+|align="center"| 6
+|-
+| [[Factory Rejects]] {{changes}}
+| [[Qu'Bia Arena]]
+|align="center"| 40
+|align="center"| 30 minutes
+|align="center"| 6
+|-
+| [[Steamed Sprouts]] {{changes}}
+| [[Balga's Dais]]
+|align="center"| 40
+|align="center"| 30 minutes
+|align="center"| 6
+|-
+| [[Royal Succession]] {{changes}}
+| [[Balga's Dais]]
+|align="center"| 40
+|align="center"| 15 minutes
+|align="center"| 3
+|-
+| [[Undying Promise]] {{changes}}
+| [[Qu'Bia Arena]]
+|align="center"| 40
+|align="center"| 15 minutes
+|align="center"| 3
+|-
+| [[Royal Jelly (BCNM)]] {{changes}}
+| [[Waughroon Shrine]]
+|align="center"| 40
+|align="center"| 15 minutes
+|align="center"| 3
+|}
+
+{{DivineNavbox}}

@@ -1,0 +1,33 @@
+{{Item Sections}}<section begin="Item Image"/>{{Item Image|EvokersBracersPlus1.png}}<section end="Item Image"/>
+==Statistics==
+{{Item Statistics
+| type = Armor
+ | icon id = 14904
+| name = Evoker's bracers +1
+| tags = {{Rare}}{{Exclusive}}
+| slot = Hands
+| stats = {{stat|def|11}} {{stat|mp|+19}}<br>{{stat|Blood Pact ability delay|-1}}<br>'''Occasionally converts damage taken<br>of avatar element to MP'''<br>{{stat|Avatar}} {{stat|Enmity|-2}}
+| level = 74
+| jobs = [[SMN]]
+| set = Evoker's Attire +1 Set
+| storable = {{Storable|Porter Moogle|05}}
+}}
+
+==Horizon Changes {{changes}}==
+{{HorizonChangesBox}}
+
+==Other Uses==
+{{Used In
+| resale price = none
+}}
+==How to Obtain==
+{{AH|Undeliverable Exclusive}}
+===Quest===
+Obtained by trading the following items to [[Sagheera]] in [[Port Jeuno]]:
+*[[Evoker's Bracers]]
+*[[Glittering Yarn]]
+*[[Astral Leather]]
+*[[Wolf Felt]]
+*20 x [[Ancient Beastcoin]]
+Your upgraded piece will be ready the next game day.
+[[Category:Artifact Armor +1]]

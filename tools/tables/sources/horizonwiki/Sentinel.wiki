@@ -1,0 +1,15 @@
+{{Job Ability
+| description = Reduces physical damage taken and increases enmity. 
+| job = Paladin
+| level = 30
+| recast = 5 minutes
+| duration = 30 seconds
+| range = 
+| notes = * Grants a -% Physical Damage Taken for the duration of the ability, starting at -90% and decreasing by -8% {{verification}} every tick, ending at -50%, where it will remain until the effect wears off.
+**Enhances "Sentinel" effect from Valor Leggings: Decreases damage by an additional 10%, resulting in 100% damage reduction when the ability is initially used.
+** The effect is applied after regular damage taken, and unlike that it's applied by exact percentages, not as fractions of 256.
+* This ability gives +100 equipment [[enmity]] {{verification}} for its duration, and then creates a large hate spike (similar to Provoke). 
+** +50 [[enmity]] if Paladin is subjob. {{verification}}
+| changes = 
+| macro = /ja "Sentinel" <me>
+}}

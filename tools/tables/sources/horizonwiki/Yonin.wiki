@@ -1,0 +1,19 @@
+{{Job Ability
+| description = Increases [[enmity]] and enhances "[[Ninja Tool Expertise]]" effect, but impairs [[attack]]. Reduces enemy [[Critical Hit Rate]] when in front of target.
+| job = Ninja
+| level = 20
+| recast = 4 minutes 30 seconds
+| duration = 5 minutes
+| range = 
+| notes = *Increases [[enmity]] by 10 and reduces [[Utsusemi]] cooldown, but impairs [[Attack]] by 15%. Reduces enemy [[Critical Hit Rate]] against the player. {{changes}}
+*While up the ability lowers cooldowns of [[Utsusemi]] Spells. This reduction is a static flat amount that does not grant any [[haste]] or [[Fast Cast|fastcast]] effect, instead changing the recast of ichi/ni to 35/50 respectively. then, haste and fast cast is figured into the equation. {{changes}}
+*This effect cannot be dispelled. {{changes}}
+*There is no decay to the bonuses granted. {{changes}}
+*Does not Impair accuracy or Improve evasion. {{changes}}
+*Cannot be used with Ninja as a support job.
+*Reduces the chance an enemy can critically strike a Ninja.
+*Does not enhance [[Ninja Tool Expertise]] like it did in era/retail.
+*January 30 2026 Rebase: A "Magic Attack Bonus" penalty is now applied while under the effect of Yonin.
+| changes = Yonin
+| macro = /ja "Yonin" <me>
+}}

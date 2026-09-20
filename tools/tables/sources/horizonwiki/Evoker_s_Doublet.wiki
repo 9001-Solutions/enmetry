@@ -1,0 +1,28 @@
+{{Item Sections}}
+[[Category:Artifact Armor]][[Category:Summoner]]
+<section begin="Item Image"/>{{Item Image|Evokersdoublet.png|Evoker's Doublet}}<section end="Item Image"/>
+==Statistics==
+{{Item Statistics
+| type = Armor
+| name = Evoker's doublet
+| tags = {{Rare}}{{Exclusive}}
+| slot = Body
+| stats = {{stat|def|35}} {{stat|mp|+15}} {{stat|mnd|+3}} <br>{{stat|blood pact ability delay|-1}} <br>'''Resistance to Current Avatar's Element''' +20<br>{{stat|avatar}} {{stat|Enmity|-2}}
+| level = 58
+| jobs = [[SMN]]
+| set = Evoker's Attire Set
+}}
+''Resistance to Current Avatar's Element +20''
+*The Summoner gains +20 [[Resistance|elemental resistance]] according to what avatar he/she has out, having [[Carbuncle]] summoned would grant +20 to light resistance to the summoner, while having [[Ramuh]] summoned would grant the summoner +20 thunder resistance.
+*This is currently bugged, as it does not work for Diabolos. {{verification}}
+==Horizon Changes {{changes}}==
+{{HorizonChangesBox|{{stat|blood pact ability delay|-1}}|Description reads ''Resistance to Current Avatar's Element +20'' instead of ''Avatar Elemental Resistance +20'' but has the same effect {{verification}}|}}
+==Other Uses==
+{{Used In
+| resale price = none
+| artifact armor upgrade = Evoker's Doublet +1
+}}
+==How to Obtain==
+{{AH|Undeliverable Exclusive}}
+===Quest===
+*[[Borghertz's Calling Hands]] ([[Temple of Uggalepih]] Coffer)

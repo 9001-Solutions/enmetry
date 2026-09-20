@@ -1,0 +1,31 @@
+{{Item Sections}}<section begin="Item Image"/>{{Item Image|SummonersSpats +1.png|Summoner's Spats +1}}<section end="Item Image"/>
+==Statistics==
+{{Item Statistics
+| type = Armor
+| name = Summoner's spats +1
+| tags = {{Rare}}{{Exclusive}}
+| slot = Legs
+| stats = {{stat|def|30}} {{stat|mp|+25}}<br/>'''[[Template:Spirit Spell Casting Time|Shortens magic recast time for<br>elemental avatars]]'''<br/>{{stat|"Blood Pact" Ability Delay|-2}}<br/>{{stat|Avatar}}: {{stat|Enmity|+2}}
+| level = 75
+| jobs = [[SMN]]
+| set = Summoner's Attire +1 Set
+| storable = {{Storable|Porter Moogle|07}}
+}}
+
+==Horizon Changes {{changes}}==
+{{HorizonChangesBox}}
+
+==Other Uses==
+{{Used In
+| resale price = none
+}}
+
+==How to Obtain==
+{{AH|Undeliverable Exclusive}}
+===Quest===
+Obtained by trading the following items to [[Sagheera]] in [[Port Jeuno]]:
+*[[Summoner's Spats]]
+*[[Summoner's Spats -1]]
+*[[Wolf Felt]]
+*30 x [[Tukuku Whiteshell|T. Whiteshell]]
+[[Category:Relic Armor +1]]

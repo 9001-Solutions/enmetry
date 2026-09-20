@@ -1,0 +1,38 @@
+{{Item Sections}}<section begin="Item Image"/>{{Item Image|Evoker's pigaches plus 1.png|Evoker's Pigaches +1}}<section end="Item Image"/>
+==Statistics==
+{{Item Statistics|nd
+| type = Armor
+| icon id = 15366
+| name = Evoker's Pigaches +1
+| tags = {{Rare}}{{Exclusive}}
+| slot = Feet
+| stats = {{stat|def|10}} {{stat|mp|+25}}<br>{{stat|Avatar perpetuation cost|-1}}<br>{{stat|Avatar}} '''[[Enhances Avatar Evasion|Enhances avatar evasion]]''' <br>{{stat|Avatar}} {{stat|Enmity|-4}}
+| level = 74
+| jobs = [[SMN]]
+| notes = Enhances Avatar Evasion:
+* Increases avatar evasion +5
+| set = Evoker's Attire +1 Set
+| storable = {{Storable|Porter Moogle|05}}
+}}
+
+==Horizon Changes {{changes}}==
+{{HorizonChangesBox}}
+
+==Other Uses==
+{{Used In
+| resale price = none
+| reforged artifact armor = Convoker's Pigaches
+}}
+
+==How to Obtain==
+{{AH|Undeliverable Exclusive}}
+===Quest===
+Obtained by trading the following items to [[Sagheera]] in [[Port Jeuno]]:
+*[[Evoker's Pigaches]]
+*[[Glittering Yarn]]
+*[[Astral Leather]]
+*[[Ancient Lumber]]
+*15 x [[Ancient Beastcoin]]
+Your upgraded armor will be ready the next game day.
+
+[[Category:Artifact Armor +1]]

@@ -218,6 +218,30 @@ t.test('a /check reply states the level in its param; other messages and gaugele
     t.eq(packets.checkedLevel(packets.parseMessage(message(88, 0x44, 0xB3))), nil);
 end);
 
+t.test('an outgoing equip packet names the slot, container and inventory index; a set lists each entry', function ()
+    local one = string.char(0x50, 0x04, 0, 0, 0x07, 0x0D, 0x08, 0x00);
+    t.eq({ packets.parseEquip(one) }, { 0x0D, 0x08, 0x07 });
+    t.eq(packets.parseEquip('\80\4'), nil);
+    local set = string.char(0x51, 0x12, 0, 0, 2, 0, 0, 0,
+        0x07, 0x0D, 0x08, 0x00,
+        0x00, 0x05, 0x00, 0x00,
+        0xFF, 0xFF, 0xFF, 0xFF);
+    t.eq(packets.parseEquipSet(set), {
+        { slot = 0x0D, container = 0x08, index = 0x07 },
+        { slot = 0x05, container = 0x00, index = 0x00 },
+    });
+    t.eq(packets.parseEquipSet(string.char(0x51, 0x12, 0, 0, 3, 0, 0, 0, 0x07, 0x0D, 0x08, 0x00)), { { slot = 0x0D, container = 0x08, index = 0x07 } }, 'short');
+end);
+
+t.test('a merit packet lists each merit id with its count, skipping empty entries', function ()
+    local data = string.char(0x8C, 0x0A, 0, 0, 3, 0, 0, 0,
+        0x40, 0x01, 0x00, 0x04,
+        0x00, 0x00, 0x00, 0x00,
+        0xC4, 0x09, 0x05, 0x02);
+    t.eq(packets.parseMerits(data), { [0x0140] = 4, [0x09C4] = 2 });
+    t.eq(packets.parseMerits(string.char(0x8C, 0x02, 0, 0)), nil);
+end);
+
 t.test('a widescan row carries the entity index, its level and its name', function ()
     local row = string.char(0xF4, 0x0E, 0, 0) .. le(0x012, 2) .. string.char(90) .. string.char(2)
         .. le(0, 2) .. le(0, 2) .. 'Goblin Thug' .. string.rep('\0', 5);

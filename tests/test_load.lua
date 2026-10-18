@@ -351,6 +351,9 @@ local PROFILES = INSTALL .. 'config\\addons\\enmetry\\profiles.lua';
 os.remove(PROFILES);
 local LEVELS = INSTALL .. 'config\\addons\\enmetry\\levels.lua';
 os.remove(LEVELS);
+local MERITS = INSTALL .. 'config\\addons\\enmetry\\merits.lua';
+os.remove(MERITS);
+os.remove(INSTALL .. 'config\\addons\\enmetry\\client.lua');
 
 local function savedText(file)
     local fh = io.open(file or SETTINGS, 'rb');
@@ -401,7 +404,7 @@ end);
 t.test('the command answers with a status line and is blocked from the game', function ()
     printed = {};
     t.truthy(command('/enmetry'), 'blocked');
-    t.eq(printed, { '[enmetry] v1.0.0 | debug feed off | 0 events seen | alliance 1/18 | particles off' });
+    t.eq(printed, { '[enmetry] v1.3.1 | debug feed off | 0 events seen | alliance 1/18 | particles off | own Enmity: gear unread' });
     t.eq(command('/other'), false);
 end);
 
@@ -416,8 +419,8 @@ t.test('the debug feed shows observed packets, engaged or not', function ()
     handlers.packet_in({ id = 0x0DF, data = string.rep('\0', 0x20) });
     frame();
     t.eq(gui.begun, 1);
-    -- Header, then one stamped line: no bars.
-    t.eq({ #gui.texts, gui.texts[1] }, { 3, 'enmetry' });
+    -- Header, then one stamped line, then the version: no bars.
+    t.eq({ #gui.texts, gui.texts[1], gui.texts[4] }, { 4, 'enmetry', 'v1.3.1' });
 
     handlers.packet_in({ id = 0x028, data = MELEE });
     frame();
@@ -453,10 +456,11 @@ t.test('a packet another addon injected is not the server\'s and is ignored', fu
     t.eq(#gui.texts, before, 'nothing was added to the feed');
 end);
 
-t.test('turning the feed off leaves the header and the bars', function ()
+t.test('turning the feed off leaves the header, the bars, the fight timer and the version', function ()
     command('/enmetry debug off');
     frame();
-    t.eq(#gui.texts, 4);
+    t.eq(#gui.texts, 6);
+    t.eq({ gui.texts[5], gui.texts[6] }, { '0:00', 'v1.3.1' });
 end);
 
 t.test('the melee round shows as a bar on the mob it hit', function ()
@@ -473,14 +477,14 @@ t.test('compact drops the header, the rule and the numbers, narrows and shortens
     local wide, tall = gui.size[1], gui.size[2];
     command('/enmetry compact');
     frame();
-    t.eq(gui.texts, { 'Goblin Thug', 'Hanayaka' });
+    t.eq(gui.texts, { 'Goblin Thug', 'Hanayaka', 'v1.3.1' });
     t.truthy(gui.size[1] < wide and gui.size[2] < tall, ('%gx%g from %gx%g'):format(gui.size[1], gui.size[2], wide, tall));
     -- panel, track, CE, VE, cap line, leader marker
     t.eq(gui.rects, 6);
     command('/enmetry compact off');
     frame();
     frame();
-    t.eq({ gui.texts[1], gui.texts[2], gui.texts[3], gui.texts[4], #gui.texts }, { 'enmetry', 'Goblin Thug', 'Hanayaka', '290 / 1172', 4 });
+    t.eq({ gui.texts[1], gui.texts[2], gui.texts[3], gui.texts[4], #gui.texts }, { 'enmetry', 'Goblin Thug', 'Hanayaka', '290 / 1172', 6 });
     t.eq(gui.size, { wide, tall });
 end);
 
@@ -489,6 +493,7 @@ t.test('VE decays on screen as time passes', function ()
     now = 1.1;
     frame();
     t.eq(gui.texts[4], '290 / 1124');
+    t.eq(gui.texts[5], '0:01', 'the fight timer runs with it');
 end);
 
 t.test('with no target, focus goes where the alliance is acting; a mob met mid-fight shows deltas', function ()
@@ -496,7 +501,7 @@ t.test('with no target, focus goes where the alliance is acting; a mob met mid-f
     handlers.packet_in({ id = 0x028, data = melee(HANAYAKA, MUGGER, 34) });
     frame();
     -- No opening bonus: someone was already on the Mugger's list.
-    t.eq(gui.texts, { 'enmetry', 'Goblin Mugger', 'ordering only', 'Hanayaka', '+90 / +272' });
+    t.eq(gui.texts, { 'enmetry', 'Goblin Mugger', 'partial data', 'Hanayaka', '+90 / +272', '0:00', 'v1.3.1' });
     -- panel, rule, track, CE, VE: no cap line and no marker
     t.eq(gui.rects, 5);
 end);
@@ -689,7 +694,9 @@ t.test('a reload picks the fights up where they were; a stale or foreign save, o
     t.eq({ gui.texts[2], gui.texts[3], gui.texts[4], gui.texts[5], gui.texts[6] }, { 'Goblin Thug', 'Hanayaka', '278 / 1172', 'Tail', '90 / 272' });
     t.truthy(gui.textColors[3] ~= gui.textColors[5], 'your own name stands out from the rest');
     t.eq(gui.textColors[3], 0x73D973FF, 'in green');
-    t.eq(has('ordering only'), false, 'still clean');
+    t.eq(has('partial data'), false, 'still clean');
+    -- panel, rule, two rows of track, CE and VE, cap line, leader marker, and the mark on the row the mob is on
+    t.eq(gui.rects, 11);
     -- The mob keeps swinging at whom it held: no switch is judged.
     handlers.packet_in({ id = 0x028, data = melee(THUG, HANAYAKA, 10) });
     frame();
@@ -865,7 +872,7 @@ t.test('a switch no particle expected re-anchors the list, and a mobskill missin
     handlers.packet_in({ id = 0x028, data = melee(TAIL, THUG, 1) });
     handlers.packet_in({ id = 0x028, data = melee(THUG, HANAYAKA, 10) });
     frame();
-    t.eq(has('ordering only'), false);
+    t.eq(has('partial data'), false);
 
     local realPrint = print;
     printed = {};
@@ -879,7 +886,7 @@ t.test('a switch no particle expected re-anchors the list, and a mobskill missin
     print = realPrint;
     assert(ok, err);
     t.eq(printed, { '[enmetry] table gap -- Goblin Thug used mobskill 9999 before a switch nothing explains' });
-    t.truthy(has('re-anchored') and not has('ordering only'), table.concat(gui.texts, ', '));
+    t.truthy(has('re-anchored') and not has('partial data'), table.concat(gui.texts, ', '));
     t.truthy(savedText(GAPS):find('mobskill 9999\tzone 10\tGoblin Thug\n', 1, true), savedText(GAPS));
     -- Still learning: the next swing is weighed and scored.
     handlers.packet_in({ id = 0x028, data = melee(THUG, TAIL, 10) });
@@ -935,7 +942,7 @@ t.test('a session log records the session, what came in, what the sim made of it
     for i, line in ipairs(lines) do
         t.truthy(kinds[i] ~= nil and line:sub(-1) == '}', 'line ' .. i .. ': ' .. line);
     end
-    for _, needle in ipairs({ '"logVersion":1', '"server":"play.horizonxi.com"', '"version":"1.0.0"', '"particles":1024', '"seed":' }) do
+    for _, needle in ipairs({ '"logVersion":1', '"server":"play.horizonxi.com"', '"version":"1.3.1"', '"particles":1024', '"seed":' }) do
         t.truthy(lines[1]:find(needle, 1, true), needle .. ' in ' .. lines[1]);
     end
     t.truthy(findLine(lines, 'roster', '"name":"Hanayaka"'), 'the roster');
@@ -1280,6 +1287,54 @@ t.test('a member seen resting generates cure enmity every ten seconds from twent
     t.truthy(gui.texts[4]:find('^315 / ') ~= nil, gui.texts[4]);
     command('/enmetry reset');
     handlers.unload();
+end);
+
+t.test('your worn set follows the outgoing equip packets, and the merit packet sets your merits: both scale your bars at once and are reported', function ()
+    handlers.load();
+    now = now + 1;
+    frame();
+    -- Sattva Ring, Enmity +5, equipped from container 0 index 14 into slot 13: the ring arrives before any frame reads memory.
+    equipment[13] = 15544;
+    handlers.packet_out({ id = 0x050, data = string.char(0x50, 0x04, 0, 0, 14, 13, 0, 0) });
+    handlers.packet_in({ id = 0x028, data = melee(HANAYAKA, THUG, 34) });
+    frame();
+    t.eq(gui.texts[4], '303 / 1229');
+    printed = {};
+    command('/enmetry');
+    t.truthy(printed[1]:find('own Enmity: gear +5, merits unknown until you zone', 1, true), printed[1]);
+
+    -- Three Enmity Increase merits, read from the zone-in packet.
+    command('/enmetry reset');
+    handlers.packet_in({ id = 0x08C, data = string.char(0x8C, 0x06, 0, 0, 1, 0, 0, 0, 0x40, 0x01, 0, 3) });
+    handlers.packet_in({ id = 0x028, data = melee(HANAYAKA, THUG, 34) });
+    frame();
+    -- 200 / 900 and 90 / 272 at x1.08.
+    t.eq(gui.texts[4], '313 / 1265');
+    printed = {};
+    command('/enmetry');
+    t.truthy(printed[1]:find('own Enmity: gear +5, merits +3', 1, true), printed[1]);
+
+    -- Unequipped by an equip set, the next action is bare: +3 from merits alone.
+    equipment[13] = nil;
+    handlers.packet_out({ id = 0x051, data = string.char(0x51, 0x12, 0, 0, 1, 0, 0, 0, 0, 13, 0, 0) });
+    command('/enmetry reset');
+    handlers.packet_in({ id = 0x028, data = melee(HANAYAKA, THUG, 34) });
+    frame();
+    t.eq(gui.texts[4], '298 / 1207');
+
+    -- Merits are kept for the character across loads.
+    handlers.unload();
+    local saved = savedText(MERITS);
+    t.truthy(saved:find('Hanayaka', 1, true) and saved:find('[320] = 3', 1, true), saved);
+    handlers.load();
+    now = now + 1;
+    frame();
+    printed = {};
+    command('/enmetry');
+    t.truthy(printed[1]:find('merits +3', 1, true), printed[1]);
+    command('/enmetry reset');
+    handlers.unload();
+    os.remove(MERITS);
 end);
 
 t.test('nothing is drawn while not in the world', function ()

@@ -1,6 +1,6 @@
 addon.name    = 'enmetry';
 addon.author  = 'Hanayaka';
-addon.version = '1.0.0';
+addon.version = '1.3.1';
 addon.desc    = 'Passive enmity tracker.';
 
 require('common');
@@ -21,6 +21,7 @@ local commands = require('commands');
 local feed     = require('feed');
 local filter   = require('filter');
 local focus    = require('focus');
+local gear     = require('gear');
 local levels   = require('levels');
 local log      = require('log');
 local options  = require('options');
@@ -58,7 +59,17 @@ local BAR_ROWS = world.ALLIANCE_SLOTS;
 local PACKET_ZONE_IN = 0x00A;
 local PACKET_CHAR_UPDATE = 0x00D;
 local PACKET_ENTITY_UPDATE = 0x00E;
+local PACKET_MERITS = 0x08C;
 local PACKET_WIDESCAN = 0x0F4;
+local PACKET_OUT_ACTION = 0x01A;
+local PACKET_OUT_EQUIP = 0x050;
+local PACKET_OUT_EQUIP_SET = 0x051;
+
+-- data/merits.yaml: enmity_increase, enmity_decrease, muted_soul, and how many upgrades count by level.
+local MERIT_ENMITY_INCREASE, MERIT_ENMITY_DECREASE, MERIT_MUTED_SOUL = 0x0140, 0x0142, 0x09C4;
+local MERIT_CAPS = { { 75, 10 }, { 70, 9 }, { 65, 8 }, { 60, 7 }, { 55, 6 }, { 50, 5 }, { 40, 4 }, { 30, 3 }, { 20, 2 }, { 10, 1 } };
+local RTT_WEIGHT = 0.2;
+local RTT_LIMIT = 2;
 
 local LOG_FLUSH = 1;
 local LOG_SNAPSHOT = 1;
@@ -89,6 +100,8 @@ local logsDir = configDir .. 'logs\\';
 local researchFile = configDir .. 'research.jsonl';
 local posteriorFile = configDir .. 'research.lua';
 local stateFile = configDir .. 'state.lua';
+local meritsFile = configDir .. 'merits.lua';
+local clientFile = configDir .. 'client.lua';
 
 local RESTORE_WITHIN = 120;
 local STATE_VERSION = 1;
@@ -114,6 +127,10 @@ local state = {
     logged = nil,
     research = nil,
     researchHandle = nil,
+    gear = nil,
+    gearRead = false,
+    merits = nil,
+    sentAction = nil,
 };
 
 local function freshLogged()
@@ -154,16 +171,91 @@ local function saveProfiles()
     state.profiles:save(state.filter);
 end
 
+local function meritCap(level)
+    for _, cap in ipairs(MERIT_CAPS) do
+        if level >= cap[1] then
+            return cap[2];
+        end
+    end
+    return 0;
+end
+
+local function applyMerits()
+    local counts = state.merits and state.merits.counts;
+    if counts == nil then
+        state.world.merit = nil;
+        return;
+    end
+    local me = state.world:member(0);
+    local cap = meritCap(me and me.mainLevel or 75);
+    local function ranks(id)
+        return math.min(counts[id] or 0, cap);
+    end
+    state.world.merit = {
+        enmity = ranks(MERIT_ENMITY_INCREASE) - ranks(MERIT_ENMITY_DECREASE),
+        muted = ranks(MERIT_MUTED_SOUL),
+    };
+end
+
+local function saveClient()
+    if state.sim == nil then
+        return;
+    end
+    ensureConfigDir();
+    store.write(clientFile, { heading = state.sim:exportHeading() });
+end
+
+local function saveMerits()
+    if state.merits == nil or state.server == nil then
+        return;
+    end
+    ensureConfigDir();
+    local all = store.read(meritsFile) or {};
+    all[state.server] = all[state.server] or {};
+    all[state.server][state.merits.character] = { wall = os.time(), counts = state.merits.counts };
+    store.write(meritsFile, all);
+end
+
+local function loadMerits(server)
+    local character = state.world.party:GetMemberName(0);
+    if character == nil or character == '' then
+        return;
+    end
+    local all = store.read(meritsFile);
+    local saved = all and all[server] and all[server][character];
+    if type(saved) ~= 'table' or type(saved.counts) ~= 'table' then
+        return;
+    end
+    local counts = {};
+    for id, count in pairs(saved.counts) do
+        if type(id) == 'number' and type(count) == 'number' then
+            counts[id] = count;
+        end
+    end
+    state.merits = { character = character, counts = counts };
+    applyMerits();
+end
+
 local function priorOf(id)
     local member = state.world:allianceMember(id);
+    if member == nil then
+        member = state.sim:memberOf(id);
+    elseif id == state.world.selfId and state.world.merit ~= nil and state.gear ~= nil and state.gear.known then
+        local known = {};
+        for k, v in pairs(member) do
+            known[k] = v;
+        end
+        known.known = true;
+        member = known;
+    end
     local prior = state.profiles:prior(id, member);
     if state.log ~= nil then
         local since = preciseClock();
         local job = member and member.mainJob and priors.forJob(member.mainJob);
         state.log:write('prior', {
             id = id, name = member and member.name or state.sim and state.sim:name(id), mainJob = member and member.mainJob,
-            trust = member and member.trust, mean = prior.mean, sd = prior.sd,
-            jobMean = job and job.mean, jobSd = job and job.sd,
+            trust = member and member.trust, pet = member and member.pet, known = member and member.known,
+            mean = prior.mean, sd = prior.sd, jobMean = job and job.mean, jobSd = job and job.sd,
         });
         state.log:charge(preciseClock() - since);
     end
@@ -507,6 +599,12 @@ local function apply(key)
     end
     if key == 'shadowAbsorb' then
         state.sim:setShadowRule(s.shadowAbsorb);
+    elseif key == 'heading' then
+        state.sim.opts.heading = s.heading;
+    elseif key == 'audit' then
+        state.sim:setAudit(s.audit and function (line)
+            print(chat.header(addon.name):append(chat.message('audit  ' .. line)));
+        end or nil);
     elseif key == 'values' then
         state.sim:setValues(s.values);
     elseif key == 'particles' then
@@ -555,13 +653,19 @@ ashita.events.register('load', 'enmetry_load', guarded('load', function ()
     state.settings = options.sanitize(store.load(configFile, options.defaults()));
     canvas.place(state.settings.x, state.settings.y);
     canvas.onMove = save;
+    canvas.version = build and ('v%s %s'):fmt(addon.version, build) or ('v%s'):fmt(addon.version);
     canvas.palette({ ce = state.settings.ceColor, ve = state.settings.veColor, panel = state.settings.panelColor });
 
     local memory = AshitaCore:GetMemoryManager();
     state.world = world.new(memory:GetParty(), memory:GetEntity(), memory:GetPlayer(), memory:GetTarget(),
         memory:GetInventory());
     state.world:refresh();
+    state.gear = gear.new(tables.items);
+    state.world.gear = state.gear;
+    state.gearRead = false;
     local server = profiles.serverOf(AshitaCore:GetConfigurationManager():GetString('boot', 'ashita.boot', 'command'));
+    state.merits = nil;
+    loadMerits(server);
     state.profiles = profiles.new(profilesFile, server);
     state.profiles:load();
     state.levels = levels.new(levelsFile, server, tables.horizonlevels, tables.levelRange);
@@ -586,7 +690,7 @@ ashita.events.register('load', 'enmetry_load', guarded('load', function ()
         openResearch(server);
     end
     state.sim = sim.new(state.world, {
-        shadowRule = state.settings.shadowAbsorb, values = state.settings.values,
+        shadowRule = state.settings.shadowAbsorb, values = state.settings.values, heading = state.settings.heading,
         filter = state.filter, log = state.log, research = state.research,
         levelRange = function (mob)
             local r = state.world:resolve(mob);
@@ -597,6 +701,11 @@ ashita.events.register('load', 'enmetry_load', guarded('load', function ()
     state.gaps = 0;
     state.resting = {};
     state.server = server;
+    local client = store.read(clientFile);
+    if client ~= nil then
+        state.sim:importHeading(client.heading);
+    end
+    apply('audit');
     local restored, elapsed = restore(server, os.clock());
     if restored ~= nil then
         state.wipes = state.sim.wipes;
@@ -610,6 +719,8 @@ end));
 ashita.events.register('unload', 'enmetry_unload', guarded('unload', function ()
     save();
     saveProfiles();
+    saveMerits();
+    saveClient();
     if state.levels ~= nil then
         state.levels:save();
     end
@@ -642,6 +753,7 @@ ashita.events.register('command', 'enmetry_command', guarded('command', function
         sim = state.sim,
         nameOf = nameOf,
         save = save,
+        apply = apply,
         profiles = state.profiles,
         saveProfiles = saveProfiles,
         log = state.log,
@@ -693,7 +805,10 @@ ashita.events.register('packet_in', 'enmetry_packet_in', guarded('packet_in', fu
         state.sim:clear();
         state.levels:clear();
         state.resting = {};
+        state.gearRead = false;
         saveProfiles();
+        saveMerits();
+        saveClient();
         state.levels:save();
         if state.log ~= nil then
             state.log:flush();
@@ -724,10 +839,34 @@ ashita.events.register('packet_in', 'enmetry_packet_in', guarded('packet_in', fu
         end
         return;
     end
+    if e.id == PACKET_MERITS then
+        local counts = packets.parseMerits(e.data);
+        if counts ~= nil then
+            local character = state.world.party:GetMemberName(0);
+            if state.merits == nil or state.merits.character ~= character then
+                state.merits = { character = character, counts = {} };
+            end
+            for id, count in pairs(counts) do
+                state.merits.counts[id] = count;
+            end
+            applyMerits();
+            if state.log ~= nil then
+                state.log:write('merits', { character = character, enmity = state.world.merit.enmity, muted = state.world.merit.muted });
+            end
+        end
+        return;
+    end
 
     local event = nil;
     if e.id == 0x028 then
         event = packets.parseAction(e.data);
+        if event ~= nil and state.sentAction ~= nil and event.actorId == state.world.selfId then
+            local sample = os.clock() - state.sentAction;
+            state.sentAction = nil;
+            if sample >= 0 and sample <= RTT_LIMIT then
+                state.world.rtt = state.world.rtt and (state.world.rtt * (1 - RTT_WEIGHT) + sample * RTT_WEIGHT) or sample;
+            end
+        end
     elseif e.id == 0x029 then
         event = packets.parseMessage(e.data);
     end
@@ -743,6 +882,9 @@ ashita.events.register('packet_in', 'enmetry_packet_in', guarded('packet_in', fu
             learnLevel(event.targetId, level, 'check');
         end
     end
+    if event.kind == 'action' and event.actorId == state.world.selfId and state.gear ~= nil then
+        state.gear:read(state.world.inventory, os.clock());
+    end
     local text = feed.describe(event, state.world);
     state.feed:push(text, os.date('%H:%M:%S'));
     if state.log ~= nil then
@@ -753,6 +895,35 @@ ashita.events.register('packet_in', 'enmetry_packet_in', guarded('packet_in', fu
     state.sim:observe(event, os.clock());
     if #state.sim.gaps ~= state.gaps then
         logGaps();
+    end
+end));
+
+local function itemAt(container, index)
+    if index == 0 then
+        return 0;
+    end
+    local item = state.world.inventory and state.world.inventory:GetContainerItem(container, index);
+    return item and item.Id or 0;
+end
+
+ashita.events.register('packet_out', 'enmetry_packet_out', guarded('packet_out', function (e)
+    if e.injected or state.gear == nil then
+        return;
+    end
+    local now = os.clock();
+    if e.id == PACKET_OUT_EQUIP then
+        local slot, container, index = packets.parseEquip(e.data);
+        if slot ~= nil and slot < gear.SLOTS then
+            state.gear:equip(slot, itemAt(container, index), now);
+        end
+    elseif e.id == PACKET_OUT_EQUIP_SET then
+        for _, entry in ipairs(packets.parseEquipSet(e.data) or {}) do
+            if entry.slot < gear.SLOTS then
+                state.gear:equip(entry.slot, itemAt(entry.container, entry.index), now);
+            end
+        end
+    elseif e.id == PACKET_OUT_ACTION then
+        state.sentAction = now;
     end
 end));
 
@@ -804,6 +975,12 @@ ashita.events.register('d3d_present', 'enmetry_present', guarded('d3d_present', 
     if now - state.lastRoster >= ROSTER_INTERVAL then
         state.lastRoster = now;
         state.world:refresh();
+        -- Memory holds what the server accepted; a refused swap would otherwise stay in the packet time line.
+        state.gear:read(state.world.inventory, now);
+        state.gearRead = true;
+        if state.merits ~= nil then
+            applyMerits();
+        end
         for _, id in ipairs(state.world:alliance()) do
             local resting = state.world:resting(id);
             if resting ~= nil and resting ~= (state.resting[id] == true) then
@@ -834,7 +1011,7 @@ ashita.events.register('d3d_present', 'enmetry_present', guarded('d3d_present', 
     end
     state.bars.limit, state.bars.me = settings.rows, state.world.selfId;
     canvas.rescale(settings.fontScale, settings.compact);
-    bars.layout(state.bars, mob and state.sim:view(mob), nameOf, canvas.barWidth, mob and state.sim:track(mob));
+    bars.layout(state.bars, mob and state.sim:view(mob), nameOf, canvas.barWidth, mob and state.sim:track(mob), now);
     -- After the layout, whose medians count against this frame's budget.
     endFrame(now, mob);
     if hidden then

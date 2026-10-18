@@ -38,9 +38,15 @@ t.test('the bare command answers with a status line', function ()
     local ctx = context({ {}, {}, {} });
     ctx.feed:push('a', 1);
     ctx.feed:push('b', 2);
-    t.eq(commands.handle('/enmetry', ctx), { 'v0.1.0 | debug feed on | 2 events seen | alliance 3/18 | particles off' });
+    t.eq(commands.handle('/enmetry', ctx), { 'v0.1.0 | debug feed on | 2 events seen | alliance 3/18 | particles off | own Enmity: gear unread' });
     ctx.filter = { count = 512 };
-    t.eq(commands.handle('/ENMETRY status', ctx), { 'v0.1.0 | debug feed on | 2 events seen | alliance 3/18 | 512 particles' });
+    t.eq(commands.handle('/ENMETRY status', ctx), { 'v0.1.0 | debug feed on | 2 events seen | alliance 3/18 | 512 particles | own Enmity: gear unread' });
+    ctx.world.selfId = 7;
+    ctx.world.allianceMember = function () return { subJob = 'WHM' }; end
+    ctx.world.gearEnmity = function (_, id, subJob) return id == 7 and subJob == 'WHM' and -4 or nil; end
+    t.eq(commands.handle('/enmetry', ctx), { 'v0.1.0 | debug feed on | 2 events seen | alliance 3/18 | 512 particles | own Enmity: gear -4, merits unknown until you zone' });
+    ctx.world.merits = function () return { enmity = 3, muted = 0 }; end
+    t.eq(commands.handle('/enmetry', ctx), { 'v0.1.0 | debug feed on | 2 events seen | alliance 3/18 | 512 particles | own Enmity: gear -4, merits +3' });
 end);
 
 t.test('debug toggles the feed view and persists the choice', function ()
@@ -97,6 +103,18 @@ t.test('alliance lists every occupied slot with jobs and levels', function ()
         '  0  Hanayaka  WAR75/NIN37',
         ' 17  Tail  WHM75',
     });
+end);
+
+t.test('audit toggles the chat readout of your own Enmity, saves it and applies it', function ()
+    local ctx, saves = context({});
+    local applied = {};
+    ctx.apply = function (key) applied[#applied + 1] = key; end
+    t.eq(commands.handle('/enmetry audit', ctx), { 'Enmity audit on' });
+    t.eq({ ctx.settings.audit, applied }, { true, { 'audit' } });
+    t.eq(commands.handle('/enmetry audit off', ctx), { 'Enmity audit off' });
+    t.eq(ctx.settings.audit, false);
+    t.eq(commands.handle('/enmetry audit on', ctx), { 'Enmity audit on' });
+    t.truthy(saves() >= 3, 'saved each time');
 end);
 
 t.test('help lists the commands, and an unknown one points at help', function ()

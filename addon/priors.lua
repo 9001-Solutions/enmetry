@@ -39,6 +39,13 @@ for class = 0, priors.CLASSES - 1 do
     priors.TRUST.classes[class] = { mean = 0, sd = 0 };
 end
 
+priors.PET = { mean = 0, sd = 3, classes = {}, muted = priors.NO_MERITS };
+priors.KNOWN = { mean = 0, sd = 2, classes = {}, muted = priors.NO_MERITS };
+for class = 0, priors.CLASSES - 1 do
+    priors.PET.classes[class] = { mean = 0, sd = 1 };
+    priors.KNOWN.classes[class] = { mean = 0, sd = 1 };
+end
+
 local CENTRES = {
     PLD = 20, NIN = 15, RUN = 20,
     WAR = 5, DRK = 0,

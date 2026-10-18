@@ -139,6 +139,49 @@ function packets.checkedLevel(event)
     return level;
 end
 
+-- 0x050, outgoing: one slot changed; an inventory index of 0 empties it.
+function packets.parseEquip(data)
+    if #data < 0x08 then
+        return;
+    end
+    return data:byte(0x05 + 1), data:byte(0x06 + 1), data:byte(0x04 + 1);
+end
+
+-- 0x051, outgoing: a whole set, count at 0x04, then index, slot, container per entry from 0x08.
+function packets.parseEquipSet(data)
+    if #data < 0x08 then
+        return;
+    end
+    local out = {};
+    for i = 0, data:byte(0x04 + 1) - 1 do
+        local at = 0x08 + i * 4;
+        if #data < at + 4 then
+            break;
+        end
+        out[#out + 1] = { slot = data:byte(at + 2), container = data:byte(at + 3), index = data:byte(at + 1) };
+    end
+    return out;
+end
+
+-- 0x08C: merits, as GP_SERV_COMMAND_MERIT lays them out: count at 0x04, then id, next cost, count per entry from 0x08.
+function packets.parseMerits(data)
+    if #data < 0x08 then
+        return;
+    end
+    local out = {};
+    for i = 0, u16(data, 0x04) - 1 do
+        local at = 0x08 + i * 4;
+        if #data < at + 4 then
+            break;
+        end
+        local id = u16(data, at);
+        if id ~= 0 then
+            out[id] = data:byte(at + 3 + 1);
+        end
+    end
+    return out;
+end
+
 function packets.parseWidescan(data)
     if #data < 0x1C then
         return;

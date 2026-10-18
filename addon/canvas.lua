@@ -11,6 +11,7 @@ local canvas = {
     scale = 1,
     compact = false,
     colors = nil,  -- palette must set this before the first render
+    version = nil,
 };
 
 local PAD = 6;
@@ -43,7 +44,7 @@ local p2 = { 0, 0 };
 
 local LEVELS = 64;
 
-local ORDERING_ONLY = 'ordering only';
+local ORDERING_ONLY = 'partial data';
 local ANCHORED = 're-anchored';
 local HOLDS_HATE = 'holds hate';
 
@@ -52,6 +53,8 @@ local colors = nil;
 local measuredScale = nil;
 local stampWidth = 0;
 local orderingWidth = 0;
+local versionWidth = 0;
+local timerText, timerSeconds = '', -1;
 
 local rgba = { 0, 0, 0, 0 };
 
@@ -116,13 +119,27 @@ local function rule(dl, wx, y)
     rect(dl, wx + PAD, y + PAD / 2, wx + canvas.width - PAD_RIGHT, y + PAD / 2 + 1, colors.rule);
 end
 
-local function drawBars(dl, x, y, lineHeight, title, layout)
+local function timer(seconds)
+    local whole = math.floor(seconds);
+    if whole ~= timerSeconds then
+        timerSeconds = whole;
+        timerText = ('%d:%02d'):format(math.floor(whole / 60), whole % 60);
+    end
+    return timerText;
+end
+
+local function drawBars(dl, x, y, lineHeight, title, layout, right)
     text(dl, x, y, colors.mob, title);
+    local titleY, after = y, x + imgui.CalcTextSize(title) + PAD;
+    local clock = not canvas.compact and layout.elapsed ~= nil and timer(layout.elapsed) or nil;
+    if clock ~= nil then
+        after = after + imgui.CalcTextSize(clock) + PAD;
+    end
     if layout.anchored > 0 then
-        text(dl, x + imgui.CalcTextSize(title) + PAD, y, colors.status, ANCHORED);
+        text(dl, after, y, colors.status, ANCHORED);
     end
     if not layout.clean then
-        text(dl, x + canvas.width - PAD - PAD_RIGHT - orderingWidth, y, colors.status, ORDERING_ONLY);
+        text(dl, x + canvas.width - PAD - PAD_RIGHT - orderingWidth - right, y, colors.status, ORDERING_ONLY);
     end
     y = y + lineHeight;
 
@@ -155,6 +172,9 @@ local function drawBars(dl, x, y, lineHeight, title, layout)
         if r.tick ~= nil then
             rect(dl, barX + r.tick, top, barX + r.tick + 1, bottom, colors.tick);
         end
+        if r.holds then
+            rect(dl, barX - PAD + 1, top, barX - PAD + 4, bottom, colors.holder);
+        end
         if not canvas.compact then
             text(dl, barX + canvas.barWidth + PAD, y, colors.status, r.label);
         end
@@ -166,6 +186,9 @@ local function drawBars(dl, x, y, lineHeight, title, layout)
     end
     if layout.marker ~= nil then
         rect(dl, barX + layout.marker, barTop, barX + layout.marker + 1, y, colors.marker);
+    end
+    if clock ~= nil then
+        text(dl, x + imgui.CalcTextSize(title) + PAD, titleY, colors.status, clock);
     end
     return y;
 end
@@ -245,6 +268,7 @@ function canvas.render(recent, title, layout)
             measuredScale = scale;
             stampWidth = imgui.CalcTextSize('00:00:00  ');
             orderingWidth = imgui.CalcTextSize(ORDERING_ONLY);
+            versionWidth = canvas.version ~= nil and imgui.CalcTextSize(canvas.version) or 0;
             if not canvas.compact then
                 local needed = imgui.CalcTextSize(LABEL_PROBE) + PAD;
                 local base = BASE_LABEL_WIDTH * scale;
@@ -261,6 +285,7 @@ function canvas.render(recent, title, layout)
 
         local top = wy + PAD;
         local y = top;
+        local stamp = canvas.version ~= nil and versionWidth + PAD or 0;
         if header then
             text(dl, wx + PAD, top, colors.title, 'enmetry');
             y = top + lineHeight;
@@ -270,7 +295,7 @@ function canvas.render(recent, title, layout)
                 rule(dl, wx, y);
                 y = y + PAD;
             end
-            y = drawBars(dl, wx + PAD, y, lineHeight, title or '', layout);
+            y = drawBars(dl, wx + PAD, y, lineHeight, title or '', layout, header and 0 or stamp);
         end
 
         if shown > 0 then
@@ -282,6 +307,10 @@ function canvas.render(recent, title, layout)
                 text(dl, wx + PAD + stampWidth, y, colors.line, line);
                 y = y + lineHeight;
             end
+        end
+
+        if stamp > 0 then
+            text(dl, wx + canvas.width - PAD_RIGHT - versionWidth, top, colors.stamp, canvas.version);
         end
 
         if (wx ~= canvas.x or wy ~= canvas.y) and not imgui.IsMouseDown(ImGuiMouseButton_Left) then

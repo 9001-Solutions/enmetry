@@ -378,4 +378,11 @@ t.test('an entry without a Muted Soul line takes the job\'s; a malformed one is 
     t.eq(session(HORIZON, 1000):prior(BAT, MEMBERS[BAT]), priors.forJob('DRK'), 'dropped');
 end);
 
+t.test('a pet draws the pet prior, and a member whose gear and merits are read draws the known one', function ()
+    local p = profiles.new('nowhere.lua', 'play.horizonxi.com', function () return 0; end);
+    t.eq(p:prior(1, { name = 'Carbuncle', pet = true, mainLevel = 75 }), priors.PET);
+    t.eq(p:prior(2, { name = 'Hanayaka', mainJob = 'PLD', known = true }), priors.KNOWN);
+    t.eq(p:prior(3, { name = 'Tail', mainJob = 'PLD' }).mean, 20);
+end);
+
 return t.done();

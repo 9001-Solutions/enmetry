@@ -438,6 +438,54 @@ t.test('duplicated particles are jittered apart so resampling does not leave cop
     t.truthy(jittered < exact / 3, ('with jitter %d are'):format(jittered));
 end);
 
+t.test('explain raises the target\'s Enmity and entry by the factor that puts them one ahead, lowers what is left to the clamp, and leaves lane 0 and lanes already right alone', function ()
+    local f = new({ max = 4, jitter = 0 });
+    local list = f:newList(10000);
+    f:fill(f:row(), A, CLASS.melee, 0);
+    f:fill(f:row(), B, CLASS.melee, 0);
+    for lane = 1, 4 do
+        for class = 0, filter.CLASSES - 1 do
+            f.bonus[(lane * filter.PLAYERS + f.players[A]) * filter.SLOTS + class] = 0;
+            f.bonus[(lane * filter.PLAYERS + f.players[B]) * filter.SLOTS + class] = 0;
+        end
+    end
+    list:cureFixed(A, 1000, 1000, 0, true);
+    list:cureFixed(B, 600, 600, 0, true);
+    -- Lane 3 has B ahead already; lane 4 has A far ahead, past what B at +100 can reach.
+    list:scale(B, 3, 3);
+    list:scale(A, 4, 3);
+    local raised, lowered = f:explain(list, B, A);
+    t.eq({ raised, lowered }, { 3, 1 });
+    t.eq({ list:value(B, 0) }, { 600, 600 }, 'lane 0 is left for the floor');
+    t.eq({ list:value(B, 1) }, { 1001, 1000 }, 'scaled by 2001 / 1200, the truncation lifted');
+    t.eq({ list:value(A, 1) }, { 1000, 1000 });
+    t.eq({ list:value(B, 3) }, { 1800, 1800 }, 'already ahead');
+    -- Lane 4: B doubles to 2400 at +100, A at 6000 comes down to -50, 3000; the anchor must do the rest.
+    t.eq({ list:value(B, 4) }, { 1200, 1200 });
+    t.eq({ list:value(A, 4) }, { 1500, 1500 });
+    local row = f:row();
+    f:fill(row, B, CLASS.melee, 0);
+    t.eq({ row[1], row[2], row[3], row[4] }, { 67, 67, 0, 100 });
+    f:fill(row, B, CLASS.cure, 0);
+    t.eq(row[1], 67, 'every class moves together');
+    f:fill(row, A, CLASS.melee, 0);
+    t.eq({ row[1], row[3], row[4] }, { 0, 0, -50 });
+
+    -- A tie goes to the current target: nothing moves for them, everything for the other.
+    list:set(A, 700, 700);
+    list:set(B, 700, 700);
+    t.eq({ f:explain(list, A, A) }, { 0, 0 });
+    raised, lowered = f:explain(list, B, A);
+    -- Lane 4 has B at +100 and A at -50 already: nothing left to move but the floor.
+    t.eq({ raised, lowered }, { 3, 0 });
+    for lane = 1, 3 do
+        local ce, ve = list:value(B, lane);
+        t.eq(ce + ve, 1401, 'lane ' .. lane);
+    end
+    t.eq({ list:value(B, 4) }, { 700, 700 });
+    t.eq({ f:explain(list, B, B) }, { 0, 0 }, 'nothing left to do');
+end);
+
 t.test('the view reads the weighted median of each entry\'s total', function ()
     local f = new({ max = 5 });
     local list = f:newList(10000);

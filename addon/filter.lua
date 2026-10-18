@@ -565,6 +565,88 @@ function filter:observe(list, target, switch)
     return true, false;
 end
 
+local function multiplierRange(self, lane, slot)
+    if lane == 0 or slot == nil then
+        return 1, 1;
+    end
+    local bonus, base = self.bonus, (lane * filter.PLAYERS + slot) * filter.SLOTS;
+    local lo, hi = HIGH, LOW;
+    for class = 0, filter.CLASSES - 1 do
+        local b = bonus[base + class];
+        if b < lo then
+            lo = b;
+        end
+        if b > hi then
+            hi = b;
+        end
+    end
+    return 1 + lo / 100, 1 + hi / 100;
+end
+
+local function rescaleBonus(self, lane, slot, k)
+    if lane == 0 or slot == nil then
+        return;
+    end
+    local bonus, base = self.bonus, (lane * filter.PLAYERS + slot) * filter.SLOTS;
+    for class = 0, filter.CLASSES - 1 do
+        bonus[base + class] = clamp(round(100 * ((1 + bonus[base + class] / 100) * k - 1)), LOW, HIGH);
+    end
+end
+
+-- Lane 0 is the neutral replay and is left to the anchor's floor, so the log keeps a neutral reference.
+function filter:explain(list, target, current)
+    local e = list.entries[target];
+    if e == nil or not e.active then
+        return 0, 0;
+    end
+    local slot = self.players[target];
+    local v, slots, order, entries = list.v, list.slots, list.order, list.entries;
+    local raised, lowered = 0, 0;
+    for lane = 1, self.count do
+        local i = (lane * slots + e.slot) * 2;
+        local total = v[i] + v[i + 1];
+        local best = list:rival(target, lane);
+        if best ~= nil and total > 0 and (total < best or (total == best and target ~= current)) then
+            local _, hi = multiplierRange(self, lane, slot);
+            local need = best + 1;
+            local cap = 2 / hi;
+            local k = math.min(need / total, cap);
+            if k > 1 then
+                list:scale(target, lane, k);
+                rescaleBonus(self, lane, slot, k);
+                raised = raised + 1;
+                total = v[i] + v[i + 1];
+                -- Truncation can leave the scaled entry a point or two short of what the factor asked for.
+                if total < need and k < cap then
+                    list:lift(target, lane, need - total);
+                    total = v[i] + v[i + 1];
+                end
+            end
+            for _, other in ipairs(order) do
+                local o = entries[other];
+                if other ~= target and o.active then
+                    local j = (lane * slots + o.slot) * 2;
+                    local above = v[j] + v[j + 1];
+                    if above > total or (above == total and target ~= current) then
+                        local rslot = self.players[other];
+                        local lo = multiplierRange(self, lane, rslot);
+                        local down = math.max((total - 1) / above, 0.5 / lo);
+                        if down < 1 then
+                            list:scale(other, lane, down);
+                            rescaleBonus(self, lane, rslot, down);
+                            lowered = lowered + 1;
+                        end
+                    end
+                end
+            end
+        end
+    end
+    if raised + lowered > 0 then
+        self.generation = self.generation + 1;
+    end
+    return raised, lowered;
+end
+
 function filter:highest(list, current)
     local chances, n = self:chances(list, current, nil);
     local best, most = nil, 0;

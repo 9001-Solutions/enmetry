@@ -103,8 +103,10 @@ local function noLevels()
     return nil;
 end
 
-local function new(w)
-    return sim.new(w or fakeWorld(), { levelRange = levels });
+local function new(w, opts)
+    opts = opts or {};
+    opts.levelRange = levels;
+    return sim.new(w or fakeWorld(), opts);
 end
 
 local function action(actor, category, param, targets)
@@ -1186,29 +1188,30 @@ t.test('a round on the paladin is their own while they top the list, or once Cov
 
     -- Cover lasts 50 seconds at the most.  By then VE has decayed away.
     local s2 = new();
-    s2:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);            -- 353
-    s2:observe(action(TANK, 1, 0, { { MOB, { { 1, 100 } } } }), 0);          -- 153
-    s2:observe(action(TANK, 6, COVER, { { DD, { { 100, 0 } } } }), 0);       -- 154
+    s2:observe(action(TANK, 1, 0, { { MOB, { { 1, 100 } } } }), 0);          -- 353
+    s2:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);            -- 153
+    s2:observe(action(TANK, 6, COVER, { { DD, { { 100, 0 } } } }), 0);       -- 354
     s2:observe(action(MOB, 1, 0, { { TANK, { { 1, 50 } } } }), 51);          -- -60
-    t.eq(values(s2, MOB, TANK), { 94, 0, true });
-    t.eq(values(s2, MOB, DD), { 353, 0, true });
+    t.eq(values(s2, MOB, TANK), { 294, 0, true });
+    t.eq(values(s2, MOB, DD), { 153, 0, true });
 
     -- The party's icons end it sooner.
     local w = fakeWorld();
     local s3 = new(w);
-    s3:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);            -- 353 / 1361
-    s3:observe(action(TANK, 1, 0, { { MOB, { { 1, 100 } } } }), 0);          -- 153 / 461
-    s3:observe(action(TANK, 6, COVER, { { DD, { { 100, 0 } } } }), 0);       -- 154
+    s3:observe(action(TANK, 1, 0, { { MOB, { { 1, 100 } } } }), 0);          -- 353 / 1361
+    s3:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);            -- 153 / 461
+    s3:observe(action(TANK, 6, COVER, { { DD, { { 100, 0 } } } }), 0);       -- 354
     w.buffReadings[TANK] = { [STATUS_COVER] = true };
     s3:advance(1);
     w.buffReadings[TANK] = { [STATUS_COVER] = false };
     s3:observe(action(MOB, 1, 0, { { TANK, { { 1, 50 } } } }), 2);           -- -60
-    t.eq(values(s3, MOB, TANK), { 94, 341, true });
+    t.eq(values(s3, MOB, TANK), { 294, 1241, true });
 end);
 
+-- The mob swings at whoever a mechanic needs, behind or not, so these run with attacks not held to.
 t.test('each parry under Issekigan adds 300 CE on the parrier\'s Enmity, for its 60 seconds', function ()
     local w = fakeWorld();
-    local s = new(w);
+    local s = new(w, { anchor = false });
     s:observe(action(TANK, 1, 0, { { MOB, { { 1, 100 } } } }), 0);           -- 353
     s:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);             -- 153
     s:observe(action(DD, 6, ISSEKIGAN, { { DD, { { 100, 0 } } } }), 0);      -- 1 / 0
@@ -1229,7 +1232,7 @@ t.test('each parry under Issekigan adds 300 CE on the parrier\'s Enmity, for its
 end);
 
 t.test('under the LSB rule every Utsusemi shadow absorbed costs 25 CE, the last one too; Blink\'s cost nothing', function ()
-    local s = new();
+    local s = new(nil, { anchor = false });
     s:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);             -- 353 / 1361
     s:observe(action(DD, 4, UTSUSEMI_ICHI, { { DD, { { 230, 66 } } } }), 0); -- 1 / 300
     s:observe(action(MOB, 1, 0, { { DD, { { 31, 1 }, { 31, 1 } } } }), 0);
@@ -1257,7 +1260,7 @@ end);
 
 t.test('under the era rule only an absorb that leaves shadows costs CE, counting them from the cast', function ()
     local w = fakeWorld();
-    local s = sim.new(w, { levelRange = levels, shadowRule = 'era' });
+    local s = sim.new(w, { levelRange = levels, shadowRule = 'era', anchor = false });
     s:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);             -- 353
     s:observe(action(DD, 4, UTSUSEMI_ICHI, { { DD, { { 230, 66 } } } }), 0); -- 354: three
     s:observe(action(MOB, 1, 0, { { DD, { { 31, 1 }, { 31, 1 }, { 31, 1 } } } }), 0);
@@ -1284,7 +1287,7 @@ end);
 
 t.test('shadows not seen cast are Utsusemi on a ninja, or when the icons show Copy Image, and Blink otherwise', function ()
     local w = fakeWorld();
-    local s = new(w);
+    local s = new(w, { anchor = false });
     s:observe(action(TANK, 1, 0, { { MOB, { { 1, 100 } } } }), 0);           -- 353, PLD/WAR
     s:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);             -- 153, NIN/WAR
     s:observe(action(HEALER, 1, 0, { { MOB, { { 1, 100 } } } }), 0);         -- 153, WHM/BLM
@@ -2004,6 +2007,151 @@ t.test('no refit for a list picked up from a reload, or with refits turned off: 
     s3.opts.refit = false;
     s3:observe(action(MOB, 1, 0, { { DD, { { 1, 10 } } } }), 2);
     t.eq({ s3.refits, s3:track(MOB).anchored }, { 0, 1 });
+end);
+
+t.test('every attack holds its target one above the best other entry in every lane, surprise or not, and the bars follow at once', function ()
+    local r = { lines = {} };
+    function r:write(kind, fields) self.lines[#self.lines + 1] = { kind = kind, fields = fields }; end
+    function r:all(kind)
+        local out = {};
+        for _, line in ipairs(self.lines) do
+            if line.kind == kind then
+                out[#out + 1] = line.fields;
+            end
+        end
+        return out;
+    end
+    function r:last(kind) return self:all(kind)[#self:all(kind)]; end
+    local s, f = filtered(nil, { max = 8, jitter = 0 });
+    s.log = r;
+    pin(f, TANK, CLASS.melee, 0);
+    pin(f, DD, CLASS.melee, 0);
+    s:observe(action(TANK, 1, 0, { { MOB, { { 1, 400 } } } }), 0);   -- 815 / 2746
+    s:observe(action(DD, 1, 0, { { MOB, { { 1, 500 } } } }), 0);     -- 769 / 2307
+    -- 485 behind: a chance of one in twelve, no surprise, so the particles alone would keep the tank on top.
+    local before = f:posterior(DD).mean;
+    s:observe(action(MOB, 1, 0, { { DD, { { 1, 10 } } } }), 0);
+    t.eq({ s.refits, s:track(MOB).anchored, s:track(MOB).holder }, { 0, 0, DD });
+    local list = s:list(MOB);
+    -- In every particle the ninja's Enmity rose by the factor that puts them one ahead, 3562 / 3046, and
+    -- their whole entry with it; the tank is untouched.
+    for lane = 1, f.count do
+        local tce, tve = list:value(TANK, lane);
+        local dce, dve = list:value(DD, lane);
+        t.eq({ dce + dve, tce, tve }, { tce + tve + 1, 815, 2746 }, 'lane ' .. lane);
+        t.truthy(dve > 2307 and dve < 2307 * 1.18, 'VE scaled with the rest, lane ' .. lane);
+    end
+    local row = f:row();
+    f:fill(row, DD, CLASS.melee, 0);
+    for lane = 1, f.count do
+        t.eq(row[lane], 17, 'Enmity +17 explains it, lane ' .. lane);
+    end
+    t.truthy(f:posterior(DD).mean > before + 15, 'the belief moved with it');
+    -- The neutral lane keeps its values and only gets the floor: the swing's 10 damage took 30 CE first.
+    t.eq(values(s, MOB, DD), { 1255, 2307, true });
+    local view = s:view(MOB);
+    local dce, dve = view:get(DD);
+    local tce, tve = view:get(TANK);
+    t.truthy(dce + dve > tce + tve, 'the median shows the ninja on top');
+    local line = r:last('anchor');
+    t.eq({ line.mob, line.name, line.target, line.switch, line.leader, line.raised, line.lowered, line.lanes },
+        { MOB, 'Goblin', DD, false, TANK, 8, 0, 1 });
+    t.eq({ line.from, line.to }, { { 739, 2307 }, { 1255, 2307 } });
+    t.eq(r:last('discontinuity'), nil);
+    t.eq(s:track(MOB).ledger[DD]['taken melee (damage, explained, anchored)'], { n = 1, ce = 486, ve = 0 });
+
+    -- The next swing's damage drops them below again, and they are held again, by a smaller step.
+    s:observe(action(MOB, 1, 0, { { DD, { { 1, 10 } } } }), 0);
+    t.eq(#r:all('anchor'), 2);
+    t.eq(r:last('anchor').switch, false);
+    t.eq(values(s, MOB, DD), { 1255, 2307, true });
+    f:fill(row, DD, CLASS.melee, 0);
+    t.eq(row[1], 18);
+
+    -- Nothing to hold when the target already leads everywhere.
+    s:observe(action(TANK, 1, 0, { { MOB, { { 1, 400 } } } }), 0);   -- 1430 / 4592
+    s:observe(action(MOB, 1, 0, { { TANK, { { 1, 10 } } } }), 0);
+    t.eq(#r:all('anchor'), 2);
+    t.eq(values(s, MOB, TANK), { 1418, 4592, true });
+    t.eq(s:track(MOB).ledger[TANK]['taken melee (damage)'], { n = 1, ce = -12, ve = 0 });
+end);
+
+t.test('what the attacked member\'s Enmity cannot explain at +100 comes off the members above them, down to -50', function ()
+    math.randomseed(3);
+    local f = filter.new({ max = 4, jitter = 0 });
+    local s = sim.new(fakeWorld(), { levelRange = levels, filter = f, mobskills = SKILLS, refit = false });
+    pin(f, TANK, CLASS.melee, 0);
+    pin(f, DD, CLASS.melee, 0);
+    pin(f, HEALER, CLASS.melee, 0);
+    s:observe(action(TANK, 1, 0, { { MOB, { { 1, 400 } } } }), 0);     -- 815 / 2746 = 3561
+    s:observe(action(HEALER, 1, 0, { { MOB, { { 1, 300 } } } }), 0);   -- 461 / 1384 = 1845
+    s:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);       -- 153 / 461 = 614
+    -- Lane 2 alone already has the ninja at +100.
+    for class = 0, filter.CLASSES - 1 do
+        f.bonus[(2 * filter.PLAYERS + f.players[DD]) * filter.SLOTS + class] = 100;
+    end
+    local list = s:list(MOB);
+    list:scale(DD, 2, 2);
+    s:observe(action(MOB, 1, 0, { { DD, { { 1, 10 } } } }), 0);
+    t.eq(s:track(MOB).anchored, 1, 'a surprise, with no refit to try first');
+    -- The ninja doubles to 1168 at +100; the tank halves to 1780 at -50; the healer comes down to one under
+    -- the ninja; then the floor lifts the ninja's CE to one above the tank.
+    t.eq({ list:value(DD, 1) }, { 859, 922 });
+    t.eq({ list:value(TANK, 1) }, { 407, 1373 });
+    t.eq({ list:value(HEALER, 1) }, { 291, 875 });
+    -- Lane 2 was at the clamp already: nothing to raise, the others come down the same.
+    t.eq({ list:value(DD, 2) }, { 859, 922 });
+    t.eq({ list:value(TANK, 2) }, { 407, 1373 });
+    -- The tank at -50 still leads, so the floor raises the ninja above them, CE first.
+    for lane = 1, f.count do
+        local dce, dve = list:value(DD, lane);
+        local tce, tve = list:value(TANK, lane);
+        local hce, hve = list:value(HEALER, lane);
+        t.eq(dce + dve, 1781, 'lane ' .. lane);
+        t.truthy(dce + dve > tce + tve and dce + dve > hce + hve, 'the ninja leads lane ' .. lane);
+    end
+    local row = f:row();
+    f:fill(row, DD, CLASS.melee, 0);
+    for lane = 1, f.count do
+        t.eq(row[lane], 100, 'the ninja at the clamp, lane ' .. lane);
+    end
+    f:fill(row, TANK, CLASS.melee, 0);
+    for lane = 1, f.count do
+        t.eq(row[lane], -50, 'the tank at the clamp, lane ' .. lane);
+    end
+    f:fill(row, HEALER, CLASS.melee, 0);
+    t.eq(row[1], -37);
+end);
+
+t.test('a tie goes to the mob\'s current target: a swing at them raises nothing, a swing at the other does', function ()
+    local s = new();
+    s:observe(action(TANK, 1, 0, { { MOB, { { 1, 100 } } } }), 0);   -- 353 / 1361
+    s:observe(action(MOB, 1, 0, { { TANK, { { 15, 0 } } } }), 0);
+    s:list(MOB):cureFixed(DD, 353, 1361, 0, true);
+    s:observe(action(MOB, 1, 0, { { TANK, { { 15, 0 } } } }), 0);
+    t.eq(values(s, MOB, TANK), { 353, 1361, true });
+    s:observe(action(MOB, 1, 0, { { DD, { { 15, 0 } } } }), 0);
+    t.eq(values(s, MOB, DD), { 354, 1361, true });
+end);
+
+t.test('with anchoring off only a surprise re-anchors; without a filter nothing is a surprise', function ()
+    local s = new(nil, { anchor = false });
+    s:observe(action(TANK, 1, 0, { { MOB, { { 1, 400 } } } }), 0);
+    s:observe(action(DD, 1, 0, { { MOB, { { 1, 500 } } } }), 0);
+    s:observe(action(MOB, 1, 0, { { DD, { { 1, 10 } } } }), 0);
+    t.eq(values(s, MOB, DD), { 739, 2307, true });
+
+    math.randomseed(3);
+    local f = filter.new({ max = 8, jitter = 0 });
+    local s2 = sim.new(fakeWorld(), { levelRange = levels, filter = f, mobskills = SKILLS, anchor = false, refit = false });
+    pin(f, TANK, CLASS.melee, 0);
+    pin(f, DD, CLASS.melee, 0);
+    s2:observe(action(TANK, 1, 0, { { MOB, { { 1, 400 } } } }), 0);
+    s2:observe(action(DD, 1, 0, { { MOB, { { 1, 10 } } } }), 0);
+    s2:observe(action(MOB, 1, 0, { { DD, { { 1, 10 } } } }), 0);
+    t.eq(s2:track(MOB).anchored, 1);
+    local tce, tve = s2:list(MOB):get(TANK);
+    t.eq(values(s2, MOB, DD), { tce + tve + 1 - 46, 46, true });
 end);
 
 t.test('the history follows the open lists: kept from two minutes before the oldest, gone with the last', function ()
@@ -2878,6 +3026,210 @@ t.test('Super Jump sets its user to 1 CE and 0 VE on every mob within 75 yalms t
 end);
 
 --[[
+* Pets, your own gear and merits, and the mob's heading between swings.
+--]]
+
+t.test('an alliance member\'s pet holds its own entry at its master\'s level, is evidence when attacked, and is cleared when it despawns', function ()
+    local w = fakeWorld();
+    local PET, STRAY = 0x0100A030, 0x0100A035;
+    w.ids[PET] = { kind = 'pet', name = 'Carbuncle' };
+    w.ids[STRAY] = { kind = 'pet', name = 'Stray' };
+    w.pets = { [PET] = TANK };
+    function w:petOwner(id) return self.pets[id]; end
+    local s = new(w);
+    s:observe(action(TANK, 1, 0, { { MOB, { { 1, 100 } } } }), 0);       -- 353 / 1361
+    s:observe(action(PET, 1, 0, { { MOB, { { 1, 100 } } } }), 0);        -- 153 / 461
+    t.eq(values(s, MOB, PET), { 153, 461, true });
+    t.eq(s:list(MOB).others[PET], nil);
+    t.eq(s:memberOf(PET), { name = 'Carbuncle', pet = true, owner = TANK, mainLevel = 75 });
+    t.eq(s:name(PET), 'Carbuncle');
+
+    -- The mob on the pet: a holder, and held above the tank; its damage taken costs nothing, with no max HP to divide by.
+    s:observe(action(MOB, 1, 0, { { PET, { { 1, 10 } } } }), 0);
+    t.eq({ s:track(MOB).holder, s:track(MOB).holderModelled }, { PET, true });
+    t.eq(values(s, MOB, PET), { 1254, 461, true });
+
+    -- A pet with no alliance master is an outsider still.
+    s:observe(action(STRAY, 1, 0, { { MOB, { { 1, 100 } } } }), 0);
+    t.eq(s:list(MOB).others[STRAY], true);
+    t.eq(s:memberOf(STRAY), nil);
+
+    -- Released or dead, it comes off the list like a member, cleared as the holder.
+    s:observeEntity(PET, nil, true, 1);
+    t.eq(s:list(MOB):has(PET), false);
+    t.eq(s:track(MOB).holder, nil);
+end);
+
+t.test('your own gear comes from the world\'s record of the worn set, with merits on top, and the set one round trip earlier is logged when it differs', function ()
+    local w = fakeWorld();
+    function w:gearAt(now) return now - 0.3; end
+    function w:gearItems(id, subJob) return subJob == 'WAR' and { 15544, 10272 } or { 15544 }; end
+    -- The set a round trip ago carried +7; a swap since then, still in flight, would make it +2.
+    function w:gearEnmity(id, subJob, at)
+        if id ~= TANK then
+            return nil;
+        end
+        return at ~= nil and 7 or 2;
+    end
+    function w:merits(id)
+        if id == TANK then
+            return { enmity = 3, muted = 0 };
+        end
+    end
+    local s, r = logged(w);
+    -- Enmity +10: the opening 200 / 900 and the hit's 153 / 461, each x1.10.
+    s:observe(action(TANK, 1, 0, { { MOB, { { 1, 100 } } } }), 0);
+    t.eq(values(s, MOB, TANK), { 388, 1497, true });
+    local a = r:last('action');
+    t.eq({ a.mod, a.gear, a.gearInFlight, a.merits, a.items }, { 10, 7, 2, 3, { 15544, 10272 } });
+
+    -- Anyone else: the few items the world can see, as before.
+    w.worn[DD] = { [15544] = true };
+    s:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);
+    a = r:last('action');
+    t.eq({ a.mod, a.gear, a.gearInFlight, a.merits, a.items }, { 5, 5, nil, nil, { 15544 } });
+end);
+
+t.test('the audit says, for each of your own actions, the Enmity applied and every source it came from', function ()
+    local w = fakeWorld();
+    w.selfId = TANK;
+    function w:gearAt(now) return now - 0.3; end
+    function w:gearEnmity(id, subJob, at)
+        if id ~= TANK then
+            return nil;
+        end
+        return at ~= nil and 3 or 8;
+    end
+    function w:gearBreakdown(id, subJob, at)
+        if at ~= nil then
+            return { { id = 15544, name = 'sattva_ring', value = 5 }, { id = 13437, name = 'healers_earring', value = -2 } };
+        end
+        return { { id = 15544, name = 'sattva_ring', value = 5 }, { id = 10272, name = 'dux_scale_mail', value = 3 } };
+    end
+    function w:merits(id)
+        if id == TANK then
+            return { enmity = 2, muted = 0 };
+        end
+    end
+    w.buffReadings[TANK] = { [62] = true };
+    local s = new(w);
+    local lines = {};
+    s:setAudit(function (line) lines[#lines + 1] = line; end);
+    s:observe(action(TANK, 1, 0, { { MOB, { { 1, 100 } } } }), 0);
+    s:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);
+    s:observe(action(TANK, 6, 35, { { MOB, { { 100, 0 } } } }), 0);
+    t.eq(lines, {
+        'melee: Enmity +105, x2.00 = gear +3 [sattva_ring +5, healers_earring -2] + a swap still in flight would make gear +8 + merits +2 + sentinel +100',
+        'ability provoke: Enmity +105, x2.00 = gear +3 [sattva_ring +5, healers_earring -2] + a swap still in flight would make gear +8 + merits +2 + sentinel +100; base 1 CE / 1800 VE',
+    });
+
+    -- Nothing read: it says so.  Off: silence.
+    local plain, said = new(), {};
+    plain:setAudit(function (line) said[#said + 1] = line; end);
+    plain.world.selfId = DD;
+    plain:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);
+    t.eq(said, { 'melee: Enmity +0, x1.00 = gear unread + merits unknown until you zone' });
+    plain:setAudit(nil);
+    plain:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);
+    t.eq(#said, 1);
+end);
+
+t.test('a dark knight whose Muted Soul rank is read has it taken off under Souleater in every lane, with no rank left to learn', function ()
+    local w = fakeWorld();
+    w.ids[DD].member = { mainJob = 'DRK', subJob = 'WAR', mainLevel = 75 };
+    w.distances[TANK], w.distances[DD] = 3, 3;
+    function w:merits(id)
+        if id == DD then
+            return { enmity = 0, muted = 3 };
+        end
+    end
+    local r = recorder();
+    local s, f = filtered(w, { max = 4, jitter = 0 });
+    s.log = r;
+    pin(f, TANK, CLASS.melee, 0);
+    pin(f, DD, CLASS.melee, 0);
+    s:observe(action(TANK, 1, 0, { { MOB, { { 1, 100 } } } }), 0);
+    s:observe(action(DD, 6, 49, { { DD, { { 100, 0 } } } }), 0);
+    s:observe(action(DD, 1, 0, { { MOB, { { 1, 100 } } } }), 0);
+    local a = r:last('action');
+    t.eq({ a.muted, a.mutedRank, a.mod }, { true, 3, 0 });
+    -- 153 / 461 at x0.70 in every lane, whatever rank the particle drew.
+    for lane = 0, f.count do
+        t.eq({ s:list(MOB):value(DD, lane) }, { 107, 322 }, 'lane ' .. lane);
+    end
+end);
+
+t.test('the client\'s yaw convention is learned from swings; a mob then facing another member for three ticks weighs on the particles, four ticks at most', function ()
+    local w = fakeWorld();
+    w.positions[MOB], w.positions[TANK], w.positions[DD] = { 0, 0 }, { 5, 0 }, { 0, 5 };
+    w.yaws = {};
+    function w:heading(id) return self.yaws[id]; end
+    local r = recorder();
+    math.randomseed(3);
+    local f = filter.new({ max = 8, jitter = 0 });
+    local s = sim.new(w, { levelRange = levels, filter = f, mobskills = SKILLS, refit = false, anchor = false, log = r });
+    pin(f, TANK, CLASS.melee, 0);
+    pin(f, DD, CLASS.melee, 0);
+    s:observe(action(TANK, 1, 0, { { MOB, { { 1, 400 } } } }), 0);
+    s:observe(action(DD, 1, 0, { { MOB, { { 1, 380 } } } }), 0);
+    s:observeEntity(MOB, 1, false, 0);
+    -- The client reports yaw = bearing + 0.3.  Swings at the tank (bearing 0) and the ninja (a quarter turn) tell the two conventions apart.
+    local now = 0;
+    for _ = 1, 4 do
+        now = now + 0.1;
+        w.yaws[MOB] = 0.3;
+        s:observe(action(MOB, 1, 0, { { TANK, { { 1, 10 } } } }), now);
+        now = now + 0.1;
+        w.yaws[MOB] = math.pi / 2 + 0.3;
+        s:observe(action(MOB, 1, 0, { { DD, { { 1, 10 } } } }), now);
+    end
+    now = now + 0.1;
+    w.yaws[MOB] = 0.3;
+    s:observe(action(MOB, 1, 0, { { TANK, { { 1, 10 } } } }), now);
+    t.eq(s.heading.convention, 'a');
+    t.truthy(math.abs(s.heading.offset - 0.3) < 1e-6, tostring(s.heading.offset));
+    t.eq(s.heading.n, 9);
+    local calibration = r:last('facing');
+    t.eq({ calibration.samples, calibration.convention, calibration.a > 0.99, calibration.b < 0.1 }, { 8, 'a', true, true });
+
+    -- The mob turns to the ninja while the tank holds hate: three ticks facing them, then four observations, no more.
+    w.yaws[MOB] = math.pi / 2 + 0.3;
+    local generation = f.generation;
+    local tick = math.floor(now / 0.4) * 0.4;
+    for i = 1, 8 do
+        s:advance(tick + 0.4 * i + 0.01);
+    end
+    local lines = r:all('heading');
+    t.eq(#lines, 4);
+    t.eq({ lines[1].mob, lines[1].facing, lines[1].holder, lines[1].run, lines[1].used }, { MOB, DD, TANK, 3, true });
+    t.eq(lines[4].run, 6);
+    t.truthy(f.generation > generation, 'the particles moved');
+
+    -- Facing between the two says nothing; a mob that moved says nothing that tick.
+    w.yaws[MOB] = math.pi / 4 + 0.3;
+    s:advance(tick + 0.4 * 9 + 0.01);
+    t.eq(s:track(MOB).facing, nil);
+    w.yaws[MOB] = math.pi / 2 + 0.3;
+    w.positions[MOB] = { 1, 0 };
+    s:advance(tick + 0.4 * 10 + 0.01);
+    t.eq(s:track(MOB).facing, nil, 'moved');
+    s:advance(tick + 0.4 * 11 + 0.01);
+    t.eq({ s:track(MOB).facing, s:track(MOB).facingRun }, { DD, 1 });
+
+    -- The calibration survives a reload.
+    local s2 = sim.new(w, { levelRange = levels });
+    t.eq(s2:importHeading(s:exportHeading()), true);
+    t.eq({ s2.heading.convention, s2.heading.n }, { 'a', 9 });
+    t.eq(s2:importHeading({ n = 'x' }), false);
+
+    -- Turned off, swings teach nothing and ticks say nothing.
+    local s3 = sim.new(w, { levelRange = levels, heading = false });
+    s3:observe(action(TANK, 1, 0, { { MOB, { { 1, 400 } } } }), 0);
+    s3:observe(action(MOB, 1, 0, { { TANK, { { 1, 10 } } } }), 0);
+    t.eq(s3.heading.n, 0);
+end);
+
+--[[
 * The research registry: what the sim hands it.  See test_research for what
 * the registry does with an observation.
 --]]
@@ -3060,15 +3412,16 @@ t.test('a summoner\'s avatar builds up the neutral enmity it generates on each m
     s:observe(action(TANK, 1, 0, { { MOB, { { 1, 100 } } } }), 0);
     -- A Blood Pact for 260 at divisor 52: 400 CE, 1200 VE, then its table 1/60.  The avatar occupies the list.
     s:observe(action(AVATAR, 13, 585, { { MOB, { { 317, 260 } } } }), 0);
-    t.eq(s:list(MOB).others[AVATAR], true);
-    t.eq(s:list(MOB):has(AVATAR), false, 'not modelled');
+    t.eq(s:list(MOB).others[AVATAR], nil);
+    t.eq(values(s, MOB, AVATAR), { 400, 1200, true }, 'modelled, as its master\'s pet');
     -- Its melee: two hits for 26, a miss.
     s:observe(action(AVATAR, 1, 0, { { MOB, { { 1, 26 }, { 15, 0 }, { 67, 26 } } } }), 0);
     t.eq(s:track(MOB).avatars[SMN], { pet = AVATAR, pactCe = 401, pactVe = 1260, otherCe = 80, otherVe = 240 });
 
     s:observe(action(MOB, 1, 0, { { TANK, { { 1, 10 } } } }), 0);
     t.eq(r.seen[1].avatars, { { pet = AVATAR, master = SMN, pactCe = 401, pactVe = 1260, otherCe = 80, otherVe = 240 } });
-    t.eq(r.seen[1].rows, { { id = TANK, total = 1714, last = 0 } }, 'the summoner has no entry until they act');
+    t.eq(r.seen[1].rows, { { id = TANK, total = 1714, last = 0 }, { id = AVATAR, total = 1920, last = 0 } },
+        'the summoner has no entry until they act; the avatar has its own');
 
     -- The mob on the avatar itself is offered too.
     s:observe(action(MOB, 1, 0, { { AVATAR, { { 1, 10 } } } }), 0);
@@ -3292,7 +3645,7 @@ t.test('a mob staying on the tank through a dark knight\'s Souleater is read as 
     local list = s:list(MOB);
     local tce, tve = list:value(TANK, 0);
     local dce, dve = list:value(DD, 0);
-    t.truthy(dce + dve > tce + tve, 'at neutral the dark knight has passed the tank');
+    t.eq(tce + tve, dce + dve + 1, 'at neutral the dark knight passed the tank, and each swing held the tank one ahead');
     local after = f:posterior(DD).muted[5];
     t.truthy(after > before + 0.3, ('five merits went from %.2f to %.2f'):format(before, after));
     t.truthy(f:posterior(DD).muted[0] < 0.2, ('no merits fell to %.2f'):format(f:posterior(DD).muted[0]));

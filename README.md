@@ -12,7 +12,10 @@ see. It reads: it sends no packets, acts for no one, and automates nothing.
 | What you see | What it means |
 | --- | --- |
 | `Jailer of Love` | the mob in focus; one mob is shown at a time, though every engaged mob is tracked |
-| `ordering only` | this list was joined already in progress, so the totals are relative to whoever was on it first, not absolute. A `+` on every row says the same |
+| `4:07` | how long this mob's hate list has been open; not in compact mode |
+| `v1.1.0` | the addon's version, top right, with the commit it was built from when the copy was stamped with one |
+| `partial data` | the addon started watching this mob after the fight had begun, so it missed what everyone had before. The bars show only what each player gained or lost since then, with a `+` on every row, in that order. Whoever had hate before can look low until they act again. The cap line and leader marker are hidden because true totals are unknown. Internally this is the ordering-only tier |
+| red mark left of a bar | the member the mob last attacked. Their bar is held at least one above every other bar on the attack, whatever the particles thought |
 | green name | you |
 | orange segment | CE, which never decays |
 | blue segment | VE, decaying 60 a second |
@@ -64,6 +67,7 @@ The deployed copy gets a `build.lua` naming the commit it came from
 /enmetry                  status line, with the particle count
 /enmetry compact [on|off] toggle the compact panel: no header, no CE/VE numbers, narrower
 /enmetry debug [on|off]   toggle the live action feed
+/enmetry audit [on|off]   say your own Enmity and its sources in chat on each of your actions
 /enmetry clear            empty the action feed
 /enmetry alliance         list alliance slots with jobs and levels
 /enmetry pin              lock the panel on the mob shown
@@ -99,8 +103,10 @@ shows at once and is written once the widget is let go, or the window closed.
 | Show the action feed | `debug` | `false` |
 | Table values where era and LandSandBoat differ | `values` | `era` (the era table) or `lsb` (LandSandBoat's); lists already open keep what they were given |
 | Utsusemi absorbs that cost CE | `shadowAbsorb` | `lsb` (every one) or `era` (all but the last) |
+| Read which member a mob faces between swings | `heading` | `true` |
 | Particles | `particles` | 1024; the most the filter runs, fewer when the frame budget says so |
 | Session log, research log | `log`, `research` | `true` |
+| Enmity audit in chat | `audit` | `false` |
 
 The particle count is a ceiling the filter keeps to while it runs: lowering it
 drops particles at once, raising it lets the budget grow them back. 0 turns
@@ -165,6 +171,24 @@ the posterior median, and how far either side of it the truth could be.
 - An attack on anyone the model doesn't track says nothing and is dropped.
   So is one on an ordering-only list, whose values miss what came before
   watching, and a round Cover took, which was inferred from the list itself.
+- Whatever the particles made of it, the attack itself is a hard fact: the
+  member attacked led every other active entry when the mob chose them. So
+  after every attack on a tracked member, once the attack's own damage has
+  taken its CE, every particle that had them behind is **corrected** to the
+  nearest gear that explains it. The member's Enmity in that particle is
+  raised by the factor that puts their total one above the best other
+  entry, and their CE and VE are scaled by the same factor, up to the
+  server's +100 clamp. If +100 is not enough, every entry still above them
+  is lowered the same way, down to -50. If even that leaves them behind, no
+  gear explains it: their entry is raised by what is left, CE first, and
+  the attack is a discontinuity. The bars then show the member the mob is on
+  at the top at once, with a value their gear would give, and the belief
+  about their gear moves with it, so their later actions are scaled by it.
+  A particle that had them behind still loses weight for it; the correction
+  only moves it to the nearest consistent guess. A tie goes to the mob's
+  current target, as on the server, so a swing at them changes nothing.
+  Ordering-only lists and the neutral lane get the one-point floor alone.
+  The log writes an `anchor` line for every attack that moved a particle.
 - An attack essentially no particle expected, where the posterior's own
   chance of it is under 1%, is a surprise. Most often the particles never
   tried the gear that explains it: a tank near Enmity +100 with rangers
@@ -181,12 +205,11 @@ the posterior median, and how far either side of it the truth could be.
 - When even that leaves every particle with the member behind, the server
   did something the model doesn't follow, like a hate reset it never saw,
   and reweighting would blame someone's gear for it. The member is then
-  **re-anchored**: once the attack's own damage has taken its CE, their
-  entry is raised in every particle to one above the best other active
-  entry, the least the mob can have seen them hold, CE first and VE past
-  CE's cap. The list stays absolute and goes on being learned from; the
-  panel marks it `re-anchored`, since that member's values are a floor from
-  there. Without the filter nothing is judged a surprise.
+  **re-anchored**: the same raise every attack applies, the least the mob
+  can have seen them hold, but with no reweighting to go with it. The list
+  stays absolute and goes on being learned from; the panel marks it
+  `re-anchored`, since that member's values are a floor from there. Without
+  the filter nothing is judged a surprise.
 - When that attack moves the mob off another member right after a mob TP
   move the mobskill table doesn't have, the move most likely reset hate.
   Chat says so and a line goes to `gaps.log`: when, the skill, the zone and
@@ -478,8 +501,47 @@ Horizon's buffs are known quantities, not guesses:
   lands through the entity's own damage taker and not the path that credits
   the attacker. Blood Weapon's added effect is the same: it drains what the
   hit dealt back to the dark knight and adds no damage.
-- Your own Sattva Ring (+5), Healer's Earring and Healer's Belt (-2 each on a
-  WHM sub) are read off your equipment. Nobody else's gear can be seen.
+- Your own gear is known exactly. Every item with an Enmity modifier in
+  LandSandBoat, 1300-odd of them, is in `items.lua`, with Horizon's own
+  values for Sattva Ring (+5), Healer's Earring and Healer's Belt (-2 each
+  on a WHM sub) over the top. Your worn set is followed from the outgoing
+  equip packets, `0x050` and `0x051`, so a swap counts the moment you send
+  it, not when memory catches up, and memory is read back on every action
+  and every half second so a swap the server refused does not stick. The
+  server applied the set it held when the action completed: the set as it
+  was one round trip before the result arrived, the round trip measured
+  from your action requests to their results. When a swap still in flight
+  would change the Enmity, the `action` line says so as `gearInFlight`.
+  Nobody else's gear can be seen: everyone swaps for every action, and
+  style lock hides the models. `/enmetry audit on` says in chat, for each of
+  your own actions, the Enmity the sim applied and where every point came
+  from: each worn item with its value, a swap still in flight, your merits,
+  each buff, and Muted Soul, with the multiplier and the action's base CE and
+  VE. It is the number the game used, as far as the addon can read it.
+- Your own merits are read from the merit packet, `0x08C`, which the server
+  sends on every zone-in, and kept per character in `merits.lua` for a load
+  mid-zone: Enmity Increase and Decrease add to your known Enmity, and a
+  dark knight's Muted Soul rank is taken off directly under Souleater
+  instead of being learned. With both read, your own particles start from a
+  tight prior, since only Horizon's unlisted item changes are left.
+- Pets of alliance members are tracked like members: avatars, wyverns,
+  automatons and jug pets hold their own entries at their master's level,
+  are evidence when a mob attacks them, and come off the list when they die
+  or are released. The master's Avatar: Enmity gear scales an avatar's own
+  gains when the master is you. A pet's damage taken costs it nothing, since
+  no max HP can be read for it. A pet with no alliance master stays an
+  outsider.
+- Between swings the mob's facing is read. The server turns a mob toward
+  its target every tick, and the client's yaw is in memory. The yaw's
+  convention against the ground-plane bearing is not assumed: it is learned
+  from swings, which the mob must face to land, and the channel stays off
+  until eight swings agree on one convention to within a few degrees. Once
+  calibrated, a mob standing still and facing one tracked member alone,
+  within fifteen degrees with nobody else within thirty, for three ticks,
+  is weighed as a steady-state observation of that member for the next four
+  ticks, then left until the next swing. Facing never corrects a particle
+  outright; only a packet does. The `heading` setting turns it off; the
+  calibration is kept in `client.lua`.
 - Souleater is tracked as a buff with no enmity of its own (ability 49, 60 s):
   it is the window in which a dark knight main's Muted Soul rank applies, as
   the filter estimates it. LandSandBoat applies the rank to every gain while
@@ -654,6 +716,7 @@ luajit tools/gentables.lua --fetch-wiki   # re-snapshot the wiki first
 | `regions.lua` | zone id to region, copied from LandSandBoat's zone switch by `tools/genregions.lua`; which zones Signet's and Sigil's resting bonus holds in |
 | `horizonlevels.lua` | Horizon's mob level ranges by zone id and name, copied from a Horizon mob taxonomy by `tools/genhorizonlevels.lua` (`--taxonomy FILE` or `$ENMETRY_TAXONOMY`); a mob listed there once per job is one entry spanning its variants |
 | `overlays.lua` | Horizon buffs, conditional bonuses, gear and self-enmity effects: Sentinel, Yonin, Defender, Provoke under Defender, Utsusemi under Yonin, Sattva Ring, Healer's Earring, Avatar: Enmity gear, High Jump, Super Jump |
+| `items.lua` | every item with an Enmity modifier, from LandSandBoat's `item_mods` and the support-job rows of `item_latents`, with the Horizon gear rules over the top; Enmity latents on conditions the addon cannot read are listed in its header and left out |
 
 Sources, in rising precedence:
 
@@ -719,7 +782,7 @@ count; `perf` says what it cost.
 | `list` | a hate list opened: `mob`, `name`, `clean`, `engaged` as read then, `fresh` (engaged within ten seconds at full HP: clean by the aggro rule), `hpp` and `engagedFor` seconds as the state had them, `levels` (the mob's level range, `[min, max]`; absent when no source has one) and `levelSource` (`stated`, `seen`, `horizon` or `table`) |
 | `rest` | an alliance member sat down (`resting` true, with `signet` and `maxHP` as read then) or got up (`resting` false, `ticks` rested): `id` |
 | `level` | the server stated a mob's level: `mob` (absent for a widescan row naming an entity out of range), `name`, `zone`, `level`, `source` (`check` or `widescan`); written only when it was news |
-| `action` | an alliance member's action as the sim applied it: `actor`, `name`, `category`, `param`, `class` (the filter's action class), `mod` (known Enmity: buffs and seen gear), `buffs` (overlay rules held), `muted` (true when a DRK main's Muted Soul rank applied), `readable` (whether their buff icons can be read), `gear` and `items` (Enmity and item ids of seen gear, only ever your own), `targets` of `id`, `distance` (absent when either side isn't rendered, which counts as in range) and `level` (what the damage divisor takes: the range's middle, the actor's level without one, or the alliance's highest when theirs is unreadable), `entry`, `cure`, `ce`/`ve` (the base values applied, after any Horizon `rule`), `ceTrust`/`veTrust` |
+| `action` | an alliance member's action as the sim applied it: `actor`, `name`, `category`, `param`, `class` (the filter's action class), `mod` (known Enmity: buffs and seen gear), `buffs` (overlay rules held), `muted` (true when a DRK main's Muted Soul rank applied), `readable` (whether their buff icons can be read), `gear` and `items` (Enmity and item ids of worn gear, only ever your own, as the server held them at completion), `gearInFlight` (the Enmity of the set with swaps still in flight counted, when it differs), `merits` (your own, when read) and `mutedRank`, `pet` (true for a pet's action), `targets` of `id`, `distance` (absent when either side isn't rendered, which counts as in range) and `level` (what the damage divisor takes: the range's middle, the actor's level without one, or the alliance's highest when theirs is unreadable), `entry`, `cure`, `ce`/`ve` (the base values applied, after any Horizon `rule`), `ceTrust`/`veTrust` |
 | `enmity` | what one packet moved on one list: `mob`, `actor`, `key` (the action, as `ability provoke`, `spell cure_iii`, `melee`, `mobskill hydro_shot`, or `rest` for a resting tick; a weaponskill that closed a skillchain or carries fixed enmity says so, as `weaponskill #89 (skillchain)` or `weaponskill coronach (fixed)`), `changes` of `[id, dCE, dVE, CE, VE, active]` for each entry changed or added, and `cleared` ids |
 | `attacked` | CE lost to damage taken: `mob`, `id`, `damage`, `maxHP` it was divided by, `reduction` (percent); or `skipped` with no max HP |
 | `range` | an action from beyond the mob's enmity range, which counted for nothing: `id`, `mob`, `distance`, and every term of the decision - `base`, `mobHitbox`, `actorHitbox` and the `limit` they sum to; once a packet |
@@ -728,6 +791,10 @@ count; `perf` says what it cost.
 | `observe` | that attack as the particles saw it: `mob`, `target`, `switch`, `tier` (`clean`, or `ordering` for a list only scored, never weighed), `used` (reweighted), `surprised`, `predicted` (the posterior's chance of it), `best`/`worst` (the most and least any particle had the target ahead by), `essBefore`, `essAfter`, `resampled`, `count` |
 | `calibration` | that attack scored for the calibration readout, before it was weighed: `mob`, `target`, `switch`, `holder`, `chances` of `[id, chance]` for every entry, in list order, `level` of the credible set, `credit` it earned, `contested`, and the session so far: `attacks`, `coverage`, and `contestedCoverage` (absent until one is contested) |
 | `impossible` | on a list watched from its start, the mob attacked someone whose enmity, even if every hidden Enmity bonus had been +100, falls short of what a rival's would be at -50: no gear explains it, so the model gives one of them the wrong enmity for something. `mob`, `name`, `target`, `targetName`, `rival`, `rivalName`, `most` (the target's most), `least` (the rival's least), `short`, `values` of `[id, CE, VE]` for both, and both `ledger`s. Once a fight for each pair |
+| `anchor` | an attack on a tracked member found them behind in some particle and corrected it: `mob`, `name`, `target`, `switch`, `holder` (whom the mob was on before), `leader` on the neutral replay, `raised` (particles whose target was raised toward +100), `lowered` (entries above them lowered toward -50, summed over particles), `lanes` (lanes the one-point floor still had to raise, the neutral lane included), and the target's neutral `from` and `to` as `[CE, VE]`. Not written for a surprise, which writes `discontinuity` with the same `raised`, `lowered` and `lanes` |
+| `merits` | the merit packet was read: `character`, `enmity` (Increase less Decrease, capped by level), `muted` (Muted Soul rank) |
+| `facing` | the heading calibration moved: `samples`, `a` and `b` (how well each yaw convention agrees, 0 to 1), `convention` (`a`, `b` or absent while undecided), `offset` in radians |
+| `heading` | a mob facing a tracked member other than its holder was weighed: `mob`, `facing`, `holder`, `run` (ticks facing them), `diff` in radians, `used`, `surprised`, `predicted` |
 | `refit` | a surprise redrew the particles and replayed the fight: `mob`, `name`, `target`, `leader`, `switch`, `run` (a run of unlikely attacks, not one surprise), `widened` (who was redrawn), `events` replayed, `refits` so far, `explained` (the attack was no surprise under the wider belief), `anchored` on the list after, `ms` it took |
 | `discontinuity` | a surprise not even the widest belief explains re-anchored the target: `mob`, `name`, `target`, `switch`, `holder`, `leader`, `skill` (the mob's last mobskill, if that was its latest action), `ledger` for the target, the holder and the leader, `anchored` (times on this list), `lanes` raised, and the target's neutral `from` and `to` as `[CE, VE]` |
 | `gap` | that surprise was a switch right after a mobskill the table lacks: `skill`, `mob`, `name`, `zone` |
@@ -758,7 +825,7 @@ ledger adds up to the values its entry ends on.
 
 | `k` | Fields |
 | --- | --- |
-| `prior` | a player drawn into the filter: `id`, `name`, `mainJob`, `trust`, `mean` and `sd` of the belief they start from, and their job's `jobMean` and `jobSd`; one that differs was remembered |
+| `prior` | a player drawn into the filter: `id`, `name`, `mainJob`, `trust`, `pet`, `known` (yourself with gear and merits read), `mean` and `sd` of the belief they start from, and their job's `jobMean` and `jobSd`; one that differs was remembered |
 | `released` | a player the filter let go: `id`, `name`, `reason` (`slot`, pushed out by a newcomer, or `job`, changed main job) |
 | `snapshot` | every second while any list is open: `focus`, `target`, `particles`, `ess`, and `mobs` of `mob`, `name`, `clean`, `anchored`, `holder`, `holderModelled`, `acting`, `rows` of `[id, CE, VE, medianCE, medianVE, active, band]`, `band` the total at the 10th, 30th, 50th, 70th and 90th percentiles the bar fades across, absent without the filter |
 | `posterior` | every minute, on zoning and at unload: `particles`, `resamples`, and `players` of `id`, `name`, `mainJob`, `mean`, `sd`, `classes` (each class's offset `mean` and `sd`) and `muted` (the chance of each Muted Soul rank, none to five; only for a player who can have them) |
@@ -810,6 +877,7 @@ luajit tests/test_world.lua   # or any single file
 | `test_research` | each entry's hypotheses, prior and live hypothesis; which attacks qualify for the shadow and avatar share questions and what each hypothesis makes of them; the fit favouring the hypothesis the attacks were made under; the live log's lines and readout; the posterior file round trip; the JSON reader against the log's encoder; and the offline tool end to end |
 | `test_priors` | job priors and a kept belief fading back to one, the Muted Soul ranks included |
 | `test_profiles` | memory kept per server, character and job, the file by hand, corrupt and malformed files and seen times, pruning, forget, purge, players pushed out or changing job, last seen, trusts, the server name, and no network use anywhere in the addon |
+| `test_gear` | your worn set from inventory memory and from equip packets, the Enmity it carried at an earlier moment, support-job latents, items the table lacks, and the ring of changes wrapping |
 | `test_filter` | bonus draws from each player's prior, the posterior summarized as a prior, forgetting and handing over a player, reweighting and its floor, surprises, scoring without reweighting, switch weight, when resampling happens and what it carries, jitter, the weighted median and the band's percentiles through ties and uneven weights, the band narrowing, the weighted holder, each entry's chance of holding hate, budget scaling, and no allocation |
 | `test_sim` | which observations reach which hate list, with which level, max HP and range; ability, spell and in-range enmity; buff overlays and gear; trust counts; tracks, tiers, the hate holder and when a list ends; charm setting a member aside; mob TP moves resetting and lowering hate, Cover, Issekigan, both shadow rules, fixed-enmity weaponskills, High Jump and Super Jump, deaths, wipes, lists gone quiet, the reset and Trick Attack's partner; with a filter, each action's class, which attacks are evidence, which are scored for calibration, a surprise refitting the pair across the clamp and replaying the fight, one even the clamp cannot explain re-anchoring the target once its damage is in, no refit for a list picked up from a reload, the history kept for a refit, table gaps, the holder by vote, an 18-member fight's particle count, and no allocation; with a log, each action and what went into it, the enmity it moved, ledgers filed by mechanic and adding up with decay and clearing, fights, mob states, targets, observations on every tier, calibration scores, discontinuities, impossible attacks, gaps, mobskills, Cover, shadows, Trick Attack, range once a packet, deaths, and the log's work kept out of the budget; with the research registry, every attack offered with its rows and tier, last shadows counted under either rule, an avatar's generated enmity by source with decay and caps, and the registry's work kept out of the budget |
 | `test_focus` | target, busiest-mob fallback and pin |

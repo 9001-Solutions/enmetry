@@ -13,6 +13,7 @@ local function newRow()
     end
     return {
         id = 0, name = '', ce = 0, ve = 0, total = 0, order = 0, ceWidth = 0, veWidth = 0,
+        holds = false,
         label = '', labelCe = -1, labelVe = -1, labelClean = true,
         band = { 0, 0, 0, 0, 0 },
         lowerX = 0, upperX = 0,
@@ -37,6 +38,7 @@ function bars.new(limit)
         clean = true,
         anchored = 0,
         holder = nil,
+        elapsed = nil,
         marker = nil,
         capX = nil,
         fallback = {},
@@ -109,7 +111,7 @@ local function label(r, clean)
     r.label, r.labelCe, r.labelVe, r.labelClean = format:format(r.ce, r.ve), r.ce, r.ve, clean;
 end
 
-function bars.layout(layout, list, nameOf, width, track)
+function bars.layout(layout, list, nameOf, width, track, now)
     local all, rows = layout.all, layout.rows;
     local clean = track == nil or track.clean;
     local n = 0;
@@ -133,6 +135,7 @@ function bars.layout(layout, list, nameOf, width, track)
                 layout.pool[n] = r;
             end
             r.id, r.ce, r.ve, r.total, r.order = id, ce, ve, total, i;
+            r.holds = track ~= nil and track.holderModelled and track.holder == id;
             local band = r.band;
             if banded then
                 band[1], band[2], band[3], band[4], band[5] = list:band(id);
@@ -150,6 +153,7 @@ function bars.layout(layout, list, nameOf, width, track)
 
     layout.clean = clean;
     layout.anchored = track ~= nil and track.anchored or 0;
+    layout.elapsed = track ~= nil and now ~= nil and math.max(0, now - track.opened) or nil;
     layout.holder = nil;
     if track ~= nil and track.holder ~= nil and not track.holderModelled then
         layout.holder = nameFor(layout, track.holder, nameOf);

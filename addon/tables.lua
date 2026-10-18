@@ -8,6 +8,7 @@ local tables = {
     horizonlevels = require('data.horizonlevels'),
     regions = require('data.regions'),
     overlays = require('data.overlays'),
+    items = require('data.items'),
 };
 
 local MOB_BASE = 0x01000000;

@@ -430,6 +430,32 @@ t.test('the player\'s own equipment can be checked for an item; anyone else\'s i
     t.eq(w:wearing(7, 15544), false, 'read as it is now');
 end);
 
+t.test('your own gear Enmity and merits are read through the world; anyone else\'s are unknown', function ()
+    local w = world.new(fakeParty(ROSTER), fakeEntities({}), nil, nil, nil);
+    w:refresh();
+    t.eq({ w:gearEnmity(7, 'WHM'), w:merits(7) }, { nil, nil });
+    w.gear = { known = false, enmity = function (_, subJob, at) return (subJob == 'WHM' and -2 or 0) + (at ~= nil and 100 or 0); end };
+    t.eq(w:gearEnmity(7, 'WHM'), nil, 'not read yet');
+    w.gear.known = true;
+    t.eq({ w:gearEnmity(7, 'WHM'), w:gearEnmity(7, 'BLM'), w:gearEnmity(7, 'WHM', 3), w:gearEnmity(8, 'WHM') }, { -2, 0, 98, nil });
+    w.merit = { enmity = 3, muted = 0 };
+    t.eq({ w:merits(7), w:merits(8) }, { { enmity = 3, muted = 0 }, nil });
+end);
+
+t.test('a rendered entity\'s heading is read when the client exposes it', function ()
+    local entities = fakeEntities({
+        [0x012] = { serverId = 0x0100A012, name = 'Goblin', flags = 0x10, render = 0x200, x = 0, y = 0 },
+        [0x013] = { serverId = 0x0100A013, name = 'Bat', flags = 0x10, render = 0, x = 0, y = 0 },
+    });
+    local w = world.new(fakeParty({}), entities);
+    w:refresh();
+    t.eq(w:heading(0x0100A012), nil, 'no yaw to read');
+    entities.GetLocalPositionYaw = function (_, index) return index == 0x012 and 1.25 or 0; end;
+    t.eq(w:heading(0x0100A012), 1.25);
+    t.eq(w:heading(0x0100A013), nil, 'not rendered');
+    t.eq(w:heading(0x0100A0FF), nil, 'not there');
+end);
+
 t.test('distance is measured between two rendered entities in three dimensions', function ()
     local w = world.new(fakeParty({}), fakeEntities({
         [0x405] = { serverId = 0x0001E240, name = 'Hanayaka', flags = 0x0D, render = 0x200, x = 10, y = 20, z = 1 },

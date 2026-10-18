@@ -86,7 +86,12 @@ surveyed, and is worth patching in them separately.
 **Not readable, and how it's handled:**
 - Other players' MaxHP -> not needed. `dmg/maxHP` **is** the observable HP% delta.
 - Mob's exact level -> nuisance variable sampled per-particle from the mobdb range.
-- Enmity gear and merits -> the latent variable. This is the whole problem.
+- Enmity gear and merits -> the latent variable. This is the whole problem,
+  for everyone but you: your own worn set is followed from the outgoing
+  equip packets (`0x050`, `0x051`) against the full item table, and your
+  merits from the merit packet (`0x08C`) the server sends on zone-in. Nobody
+  else's can be seen: `/check` shows an idle set that is never the one an
+  action is taken in, and style lock hides the models.
 - Non-alliance players' buffs and jobs -> out of scope (section 5).
 
 **Explicitly rejected:** `GetClaimStatus`. Claim tracks who first claimed the
@@ -96,6 +101,10 @@ mob, not who holds hate. It will confidently assert wrong constraints.
 `PathFind->LookAt(target)` every tick, so the mob physically faces its target and
 the client can read this at framerate. Used at much lower likelihood weight,
 gated on engaged + stationary, disabled for mobs with the `NoTurn` behavior.
+The client's yaw convention against the ground-plane bearing is not assumed:
+it is learned from melee swings, which the mob must face to land, and the
+channel stays off until eight swings agree on one convention. It never
+corrects a particle outright; only a packet does.
 
 ---
 
@@ -284,6 +293,22 @@ involved lifted the posterior's average credit to the mob's target from 74% to
 refitting on a run of unlikely attacks, did worse or was mixed, and both stay as
 replay options rather than defaults.
 
+**Every attack is a hard constraint on the list.** The soft likelihood is
+for learning gear; it is not what the bars should show. The mob attacking
+Y says Y led every active entry at that tick, whatever the posterior
+thought. So after every attack on a modelled member, once the attack's own
+damage has taken its CE, every particle that had Y behind is projected onto
+the nearest hypothesis that explains the attack: Y's Enmity is raised by the
+factor that puts their total one above the best other entry and their state
+scaled with it, up to the +100 clamp; what is still short comes off each
+entry above Y, down to -50; what no gear explains is a one-point floor and a
+discontinuity. The reweight before the projection is left as it was, so
+particles that were right keep their advantage. The bars follow the mob at
+once, with a value Y's gear would give, and Y's later actions scale by it.
+Before this the posterior median could keep the old leader on top for
+several swings after a switch, because one switch observation moves a
+particle's weight by at most 20x against the floor.
+
 **Two integrity tiers per mob:**
 
 - **Clean** - engage witnessed from an empty hate list. Publish absolute CE/VE.
@@ -391,6 +416,13 @@ ramp collapses toward the tick.
 holds hate, drawn without a bar or band so it reads as not-an-estimate. Alliance
 bars continue below - that ordering is still correct and still useful - but the
 leader marker is **hidden**, because it would be false.
+
+**Modelled hate holder.** A mark beside the bar of the member the mob last
+attacked, so a screenshot shows whether the addon saw the switch at all.
+
+**Version and timer.** The version, with the build commit when stamped, sits
+at the top right of the panel so a screenshot says what it came from. The
+non-compact title row carries how long the mob's list has been open.
 
 ---
 

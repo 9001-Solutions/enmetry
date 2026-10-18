@@ -204,7 +204,7 @@ if output:find('not found in', 1, true) then
     print('SKIP  regeneration: ' .. output:match('[^\n]*'));
 else
     t.test('regenerating from the pinned sources reproduces every vendored file', function ()
-        for _, name in ipairs({ 'actions.lua', 'mobskills.lua', 'moblevels.lua', 'overlays.lua' }) do
+        for _, name in ipairs({ 'actions.lua', 'items.lua', 'mobskills.lua', 'moblevels.lua', 'overlays.lua' }) do
             local fresh = read(scratch .. '/' .. name);
             local vendored = read('addon/data/' .. name);
             t.truthy(fresh ~= nil, name .. ' was generated:\n' .. output);
@@ -214,6 +214,23 @@ else
 end
 
 os.execute(WINDOWS and ('rmdir /s /q "%s"'):format(scratch) or ('rm -rf "%s"'):format(scratch));
+
+t.test('the item table carries every Enmity item, Horizon\'s values over LandSandBoat\'s, and support-job latents apart', function ()
+    local i = tables.items;
+    t.eq(i[15544], { name = 'sattva_ring', enmity = 5, trust = 'era' });
+    t.eq(i[13437], { name = 'healers_earring', latentEnmity = -2, subJob = 'WHM', trust = 'era' });
+    t.eq(i[15273], { name = 'mace_belt', latentEnmity = -2, subJob = 'WHM', trust = 'era' });
+    t.eq(i[13659], { name = 'mercenary_mantle', latentEnmity = 1, subJob = 'WAR', trust = 'lsb' });
+    t.eq(i[10272], { name = i[10272].name, enmity = 6, trust = 'lsb' });
+    t.eq(i[11355], nil, 'an HP latent is left out');
+    local count = 0;
+    for id, e in pairs(i) do
+        count = count + 1;
+        t.truthy(type(id) == 'number' and type(e.name) == 'string' and TRUST[e.trust], tostring(id));
+        t.truthy((e.enmity ~= nil and e.enmity ~= 0) or (e.latentEnmity ~= nil and e.subJob ~= nil), 'carries a value: ' .. tostring(id));
+    end
+    t.truthy(count > 1300, ('%d items'):format(count));
+end);
 
 t.test('Enlight is a buff overlay granted by its spell, shown by its light on each swing, for a paladin main', function ()
     local e = tables.overlays.buffs.enlight;

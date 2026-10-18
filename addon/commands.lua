@@ -7,6 +7,7 @@ local HELP = {
     '/enmetry                  status line',
     '/enmetry compact [on|off] toggle the compact panel: no header, no numbers, narrower',
     '/enmetry debug [on|off]   toggle the live action feed',
+    '/enmetry audit [on|off]   say your own Enmity and its sources in chat on each of your actions',
     '/enmetry clear            empty the action feed',
     '/enmetry alliance         list alliance slots with jobs',
     '/enmetry pin              lock the panel on the mob shown',
@@ -39,10 +40,22 @@ local handlers = {};
 
 function handlers.status(ctx)
     local particles = ctx.filter and ('%d particles'):format(ctx.filter.count) or 'particles off';
+    local w = ctx.world;
+    local me = w.selfId;
+    local own = 'own Enmity: gear unread';
+    local gearKnown = nil;
+    if me ~= nil and w.gearEnmity ~= nil then
+        local member = w:allianceMember(me);
+        gearKnown = w:gearEnmity(me, member and member.subJob);
+    end
+    if gearKnown ~= nil then
+        local merit = w.merits and w:merits(me);
+        own = ('own Enmity: gear %+d, merits %s'):format(gearKnown, merit and ('%+d'):format(merit.enmity) or 'unknown until you zone');
+    end
     return {
-        ('v%s | debug feed %s | %d events seen | alliance %d/%d | %s'):format(
-            ctx.version, onOff(ctx.settings.debug), ctx.feed.total, ctx.world:memberCount(), world.ALLIANCE_SLOTS,
-            particles),
+        ('v%s | debug feed %s | %d events seen | alliance %d/%d | %s | %s'):format(
+            ctx.version, onOff(ctx.settings.debug), ctx.feed.total, w:memberCount(), world.ALLIANCE_SLOTS,
+            particles, own),
     };
 end
 
@@ -56,6 +69,19 @@ function handlers.debug(ctx, arg)
     end
     ctx.save();
     return { 'debug feed ' .. onOff(ctx.settings.debug) };
+end
+
+function handlers.audit(ctx, arg)
+    if arg == 'on' then
+        ctx.settings.audit = true;
+    elseif arg == 'off' then
+        ctx.settings.audit = false;
+    else
+        ctx.settings.audit = not ctx.settings.audit;
+    end
+    ctx.save();
+    ctx.apply('audit');
+    return { 'Enmity audit ' .. onOff(ctx.settings.audit) };
 end
 
 function handlers.compact(ctx, arg)

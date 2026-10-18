@@ -346,7 +346,49 @@ function hatelist:decay(ticks)
     self.version = self.version + 1;
 end
 
-function hatelist:anchor(id)
+function hatelist:scale(id, lane, k)
+    local e = self.entries[id];
+    if e == nil then
+        return;
+    end
+    local v, cap = self.v, self.cap;
+    local i = (lane * self.slots + e.slot) * 2;
+    v[i] = clamp(int(f32(v[i] * k)), 0, cap);
+    v[i + 1] = clamp(int(f32(v[i + 1] * k)), 0, cap);
+    self.version = self.version + 1;
+end
+
+function hatelist:lift(id, lane, amount)
+    local e = self.entries[id];
+    if e == nil or amount <= 0 then
+        return;
+    end
+    local v, cap = self.v, self.cap;
+    local i = (lane * self.slots + e.slot) * 2;
+    local more = math.min(amount, cap - v[i]);
+    v[i] = v[i] + more;
+    v[i + 1] = math.min(cap, v[i + 1] + amount - more);
+    self.version = self.version + 1;
+end
+
+function hatelist:rival(id, lane)
+    local v, base = self.v, lane * self.slots;
+    local best, who = nil, nil;
+    for _, other in ipairs(self.order) do
+        local o = self.entries[other];
+        if other ~= id and o.active then
+            local i = (base + o.slot) * 2;
+            local total = v[i] + v[i + 1];
+            if best == nil or total > best then
+                best, who = total, other;
+            end
+        end
+    end
+    return best, who;
+end
+
+-- A tie goes to the mob's current target, so one is only a trail when the entry was not it.
+function hatelist:anchor(id, current)
     local e = self.entries[id];
     if e == nil then
         return 0;
@@ -355,20 +397,20 @@ function hatelist:anchor(id)
     local raised = 0;
     for lane = 0, self.bank.lanes - 1 do
         local base = lane * slots;
-        local best = 0;
+        local best = nil;
         for _, other in ipairs(self.order) do
             local o = self.entries[other];
             if other ~= id and o.active then
                 local i = (base + o.slot) * 2;
                 local total = v[i] + v[i + 1];
-                if total > best then
+                if best == nil or total > best then
                     best = total;
                 end
             end
         end
         local i = (base + e.slot) * 2;
         local ce, ve = v[i], v[i + 1];
-        if ce + ve <= best then
+        if best ~= nil and (ce + ve < best or (ce + ve == best and id ~= current)) then
             local need = best + 1 - ce - ve;
             local more = math.min(need, cap - ce);
             ce, need = ce + more, need - more;

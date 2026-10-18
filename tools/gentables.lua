@@ -25,6 +25,7 @@ local lsb       = require('tables.lsb');
 local moblevels = require('tables.moblevels');
 local mobskills = require('tables.mobskills');
 local overlays  = require('tables.overlays');
+local items     = require('tables.items');
 local snapshots = require('tables.snapshots');
 local sql       = require('tables.sql');
 local wiki      = require('tables.wiki');
@@ -222,6 +223,56 @@ local function renderActions(built, src)
         out[#out + 1] = ('        %s = %s, -- era %s'):format(key, emit.inline(m, { 'ce', 've', 'trust' }), emit.string(m.wiki));
     end
     out[#out + 1] = '    },';
+    out[#out + 1] = '};\n';
+    return table.concat(out, '\n');
+end
+
+--[[ items.lua ]]
+
+local ITEM_FIELDS = { 'name', 'enmity', 'latentEnmity', 'subJob', 'trust' };
+
+local function renderItems(built, src)
+    local header = append({
+        GENERATED,
+        '',
+        'Every item with an Enmity modifier, keyed by item id.  enmity applies',
+        'whenever the item is worn; latentEnmity applies on top only with subJob',
+        'as the support job.  Your own worn set is read against this table.',
+        '',
+        'Sources',
+        '  lsb      ' .. lsbSourceLine(src),
+        '           sql/item_mods.sql (mod 27, enmity in data/enums/mod.yaml) and',
+        '           sql/item_latents.sql (latent 8, subjob in data/enums/latent.yaml)',
+        '  horizon  tools/tables/horizon.lua gear; each delta\'s quoted source is above it',
+        '',
+    }, TRUST_LINES);
+    append(header, {
+        '',
+        ('%d items with a flat value, %d with a support-job latent.'):format(built.flat, built.latents),
+        '',
+        'Enmity latents on conditions the addon cannot read are left out; the',
+        'item then counts as having none.  Each is item id: name, value, latent, param:',
+    });
+    for _, s in ipairs(built.skipped) do
+        header[#header + 1] = ('  %d: %s, %d, %s, %d'):format(s.id, s.name, s.enmity, s.latent, s.param);
+    end
+    local out = { emit.header(header), 'return {' };
+    for _, id in ipairs(sortedKeys(built.byId)) do
+        local e = built.byId[id];
+        if e.horizon ~= nil then
+            append(out, citationComments(e.horizon.source, src.pages, '    '));
+        end
+        local notes = {};
+        if e.horizon ~= nil then
+            local lsb = e.subJob ~= nil and e.lsbLatentEnmity or e.lsbEnmity;
+            notes[#notes + 1] = ('horizon; lsb %s'):format(lsb == nil and 'none' or tostring(lsb));
+        end
+        local line = ('    [%d] = %s,'):format(id, emit.inline(e, ITEM_FIELDS));
+        if #notes > 0 then
+            line = line .. ' -- ' .. table.concat(notes, '; ');
+        end
+        out[#out + 1] = line;
+    end
     out[#out + 1] = '};\n';
     return table.concat(out, '\n');
 end
@@ -501,6 +552,7 @@ local function main(argv)
     -- Every LSB file, read in one batch.
     local wanted = append({
         'sql/abilities.sql', 'sql/spell_list.sql', 'sql/weapon_skills.sql', 'sql/mob_skills.sql', 'sql/item_basic.sql',
+        'sql/item_mods.sql', 'sql/item_latents.sql', 'data/enums/latent.yaml',
         'data/status_effects.yaml', 'scripts/enum/mob_skill.lua',
     }, lsbPaths);
     for _, list in pairs(paths) do
@@ -517,16 +569,23 @@ local function main(argv)
     local builtActions = buildActions(src, paths);
     local levels = buildLevels(src, paths);
     local builtSkills = buildMobskills(src, paths, levels);
+    local itemNames = overlays.itemNames(src.files['sql/item_basic.sql']);
     local resolved = overlays.resolve(horizon, {
         pages = src.pages,
         files = src.files,
         actions = builtActions,
         statusIds = overlays.statusIds(src.files['data/status_effects.yaml']),
-        itemNames = overlays.itemNames(src.files['sql/item_basic.sql']),
+        itemNames = itemNames,
+    });
+    local builtItems = items.build({
+        itemMods = src.files['sql/item_mods.sql'], itemLatents = src.files['sql/item_latents.sql'],
+        itemNames = itemNames, latentNames = items.latentNames(src.files['data/enums/latent.yaml']),
+        gear = resolved.gear,
     });
 
     local dir = opts.out:gsub('[/\\]$', '');
     writeFile(dir .. '/actions.lua', renderActions(builtActions, src));
+    writeFile(dir .. '/items.lua', renderItems(builtItems, src));
     writeFile(dir .. '/mobskills.lua', renderMobskills(builtSkills, src));
     writeFile(dir .. '/moblevels.lua', renderMoblevels(levels, src));
     writeFile(dir .. '/overlays.lua', renderOverlays(resolved, src));

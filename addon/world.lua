@@ -72,6 +72,9 @@ function world.new(party, entity, player, target, inventory)
         indexCache = {},
         misses = {},
         cached = 0,
+        gear = nil,
+        merit = nil,
+        rtt = nil,
     }, world);
 end
 
@@ -222,6 +225,42 @@ function world:hasBuff(serverId, status)
         return nil;
     end
     return set[status] == true;
+end
+
+function world:gearEnmity(serverId, subJob, at)
+    if self.gear == nil or serverId ~= self.selfId or not self.gear.known then
+        return nil;
+    end
+    return self.gear:enmity(subJob, at);
+end
+
+function world:gearItems(serverId, subJob)
+    if self.gear == nil or serverId ~= self.selfId or not self.gear.known then
+        return nil;
+    end
+    return self.gear:carrying(subJob);
+end
+
+function world:gearBreakdown(serverId, subJob, at)
+    if self.gear == nil or serverId ~= self.selfId or not self.gear.known then
+        return nil;
+    end
+    return self.gear:breakdown(subJob, at);
+end
+
+-- The server applied the set it held at completion: what was sent a round trip before the result arrived.
+function world:gearAt(now)
+    if self.rtt == nil then
+        return nil;
+    end
+    return now - self.rtt;
+end
+
+function world:merits(serverId)
+    if serverId ~= self.selfId then
+        return nil;
+    end
+    return self.merit;
 end
 
 local EQUIPMENT_SLOTS = 16;
@@ -381,6 +420,14 @@ function world:distance(a, b)
     local dy = e:GetLocalPositionY(ia) - e:GetLocalPositionY(ib);
     local dz = e:GetLocalPositionZ(ia) - e:GetLocalPositionZ(ib);
     return math.sqrt(dx * dx + dy * dy + dz * dz);
+end
+
+function world:heading(serverId)
+    local index = findIndex(self, serverId, self.byServerId[serverId]);
+    if index == nil or not rendered(self, index) or self.entity.GetLocalPositionYaw == nil then
+        return;
+    end
+    return self.entity:GetLocalPositionYaw(index);
 end
 
 -- Ashita's X and Y are the ground plane and Z the height; LandSandBoat's plane is x and z.

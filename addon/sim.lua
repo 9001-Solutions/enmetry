@@ -104,6 +104,12 @@ sim.STALE = 60;
 
 sim.QUIET = 180;
 
+sim.HEADING = {
+    samples = 8, agree = 0.9, reject = 0.7,
+    cone = math.rad(15), clear = math.rad(30), still = 0.5,
+    hold = 3, uses = 4,
+};
+
 -- No server id is zero.
 local UNSEEN = 0;
 
@@ -290,6 +296,7 @@ function sim.new(world, opts)
         ruleKeys = ruleKeys,
         effects = effectsOf(overlays),
         gear = overlays.gear,
+        avatarGear = overlays.avatarGear,
         applying = {
             entry = nil, ce = 0, ve = 0, ceTrust = nil, veTrust = nil, class = 0, mod = 0, mods = 0,
             dealer = nil, dealerMod = 0, dealerMods = 0, actorKind = nil,
@@ -297,6 +304,8 @@ function sim.new(world, opts)
         lists = {},
         tracks = {},
         states = {},
+        pets = {},
+        heading = { ac = 0, as = 0, bc = 0, bs = 0, n = 0, convention = nil, offset = nil },
         acting = {},
         covers = {},
         tricks = {},
@@ -307,6 +316,7 @@ function sim.new(world, opts)
         names = {},
         causes = nil,
         ranged = nil,
+        audit = nil,
         gaps = {},
         calibration = f and calibration.new(filter.CREDIBLE),
         wipes = 0,
@@ -316,8 +326,30 @@ function sim.new(world, opts)
     }, sim);
 end
 
+local function petOf(self, id, r)
+    local world = self.world;
+    local owner = world.petOwner and world:petOwner(id);
+    local o = owner and world:resolve(owner);
+    if o == nil or o.kind ~= 'alliance' or o.member == nil then
+        return r;
+    end
+    local cached = self.pets[id];
+    if cached ~= nil and cached.owner == owner and cached.name == r.name and cached.member.mainLevel == o.member.mainLevel then
+        return cached;
+    end
+    cached = {
+        index = r.index, name = r.name, kind = 'alliance', pet = true, owner = owner,
+        member = { name = r.name, pet = true, owner = owner, mainLevel = o.member.mainLevel },
+    };
+    self.pets[id] = cached;
+    return cached;
+end
+
 local function resolve(self, id)
     local r = self.world:resolve(id);
+    if r ~= nil and r.kind == 'pet' then
+        r = petOf(self, id, r);
+    end
     if r ~= nil and r.name ~= nil and r.name ~= '' then
         self.names[id] = r.name;
     end
@@ -587,11 +619,26 @@ local function worse(a, b)
 end
 
 local function gearOf(self, id, member)
-    local total = 0;
-    for item, rule in pairs(self.gear) do
-        if (rule.subJob == nil or member.subJob == rule.subJob) and self.world:wearing(id, item) then
-            total = total + rule.enmity;
+    local world = self.world;
+    local total = world.gearEnmity and world:gearEnmity(id, member.subJob, world.gearAt and world:gearAt(self.now));
+    if total == nil then
+        total = 0;
+        for item, rule in pairs(self.gear) do
+            if (rule.subJob == nil or member.subJob == rule.subJob) and world:wearing(id, item) then
+                total = total + rule.enmity;
+            end
         end
+    end
+    if member.pet and self.avatarGear ~= nil then
+        for item, rule in pairs(self.avatarGear) do
+            if world:wearing(member.owner, item) then
+                total = total + rule.avatarEnmity;
+            end
+        end
+    end
+    local merits = world.merits and world:merits(id);
+    if merits ~= nil then
+        total = total + merits.enmity;
     end
     return total;
 end
@@ -606,10 +653,17 @@ local function mutedSoul(self, id, member)
 end
 
 local function modsFor(self, row, id, member, class, known)
+    local muted = mutedSoul(self, id, member);
+    if muted then
+        local merits = self.world.merits and self.world:merits(id);
+        if merits ~= nil then
+            known, muted = known - merits.muted * 10, false;
+        end
+    end
     if self.filter == nil then
         return known;
     end
-    return self.filter:fill(row, id, class, known, mutedSoul(self, id, member));
+    return self.filter:fill(row, id, class, known, muted);
 end
 
 local function classOf(self, event, entry)
@@ -644,13 +698,27 @@ local function logAction(self, event, id, member, rule)
     end
     table.sort(held);
     local items, gear = {}, 0;
-    for item, g in pairs(self.gear) do
-        if (g.subJob == nil or member.subJob == g.subJob) and world:wearing(id, item) then
-            items[#items + 1] = item;
-            gear = gear + g.enmity;
+    local inFlight = nil;
+    local at = world.gearAt and world:gearAt(self.now);
+    if world.gearEnmity and world:gearEnmity(id, member.subJob, at) ~= nil then
+        gear = world:gearEnmity(id, member.subJob, at);
+        items = world.gearItems and world:gearItems(id, member.subJob) or items;
+        if at ~= nil then
+            inFlight = world:gearEnmity(id, member.subJob);
+            if inFlight == gear then
+                inFlight = nil;
+            end
         end
+    else
+        for item, g in pairs(self.gear) do
+            if (g.subJob == nil or member.subJob == g.subJob) and world:wearing(id, item) then
+                items[#items + 1] = item;
+                gear = gear + g.enmity;
+            end
+        end
+        table.sort(items);
     end
-    table.sort(items);
+    local merits = world.merits and world:merits(id);
     local targets = {};
     for _, target in ipairs(event.targets) do
         local r = world:resolve(target.id);
@@ -666,10 +734,66 @@ local function logAction(self, event, id, member, rule)
         actor = id, name = self.names[id], category = event.category, param = event.param,
         class = CLASS_NAMES[a.class], mod = a.mod, buffs = held, readable = world:hasBuff(id, 0) ~= nil,
         muted = mutedSoul(self, id, member) or nil,
-        gear = gear ~= 0 and gear or nil, items = #items > 0 and items or nil, targets = targets,
+        gear = gear ~= 0 and gear or nil, items = #items > 0 and items or nil, gearInFlight = inFlight,
+        merits = merits and merits.enmity or nil, mutedRank = merits and merits.muted > 0 and merits.muted or nil,
+        pet = member.pet or nil, targets = targets,
         entry = entry and entry.name, cure = entry and entry.cure, ce = a.ce, ve = a.ve,
         ceTrust = a.ceTrust, veTrust = a.veTrust, rule = rule and self.ruleKeys[rule],
     });
+end
+
+local function describeAction(self, event, entry)
+    local name = CATEGORY_NAMES[event.category] or ('category %d'):format(event.category);
+    if entry ~= nil then
+        return ('%s %s'):format(name, entry.name);
+    elseif event.category ~= CATEGORY_MELEE and event.category ~= CATEGORY_RANGED then
+        return ('%s #%d'):format(name, event.param);
+    end
+    return name;
+end
+
+local function auditAction(self, event, id, member, a)
+    local world = self.world;
+    local parts = {};
+    local at = world.gearAt and world:gearAt(self.now);
+    local gearTotal = world.gearEnmity and world:gearEnmity(id, member.subJob, at);
+    if gearTotal ~= nil then
+        local names = {};
+        for _, item in ipairs(world.gearBreakdown and world:gearBreakdown(id, member.subJob, at) or {}) do
+            names[#names + 1] = ('%s %+d'):format(item.name, item.value);
+        end
+        parts[#parts + 1] = ('gear %+d%s'):format(gearTotal, #names > 0 and (' [' .. table.concat(names, ', ') .. ']') or ' [none worn]');
+        local inFlight = at ~= nil and world:gearEnmity(id, member.subJob) or nil;
+        if inFlight ~= nil and inFlight ~= gearTotal then
+            parts[#parts + 1] = ('a swap still in flight would make gear %+d'):format(inFlight);
+        end
+    else
+        parts[#parts + 1] = 'gear unread';
+    end
+    local merits = world.merits and world:merits(id);
+    parts[#parts + 1] = merits and ('merits %+d'):format(merits.enmity) or 'merits unknown until you zone';
+    local keys = {};
+    for key, rule in pairs(self.buffs.rules) do
+        if rule.enmity ~= nil and self.buffs:holds(world, id, member, key, self.now) then
+            keys[#keys + 1] = key;
+        end
+    end
+    table.sort(keys);
+    for _, key in ipairs(keys) do
+        parts[#parts + 1] = ('%s %+d'):format(key, self.buffs.rules[key].enmity);
+    end
+    local total = a.mod;
+    if mutedSoul(self, id, member) and merits ~= nil then
+        total = total - merits.muted * 10;
+        parts[#parts + 1] = ('Muted Soul -%d'):format(merits.muted * 10);
+    end
+    local held = math.max(-50, math.min(100, total));
+    local line = ('%s: Enmity %+d, x%.2f = %s'):format(describeAction(self, event, a.entry), total, (100 + held) / 100,
+        table.concat(parts, ' + '));
+    if a.entry ~= nil and (a.ce ~= 0 or a.ve ~= 0) then
+        line = ('%s; base %d CE / %d VE'):format(line, a.ce, a.ve);
+    end
+    self.audit(line);
 end
 
 local function prepare(self, event, actor)
@@ -714,6 +838,9 @@ local function prepare(self, event, actor)
     end
     if self.log then
         logAction(self, event, id, member, applied);
+    end
+    if self.audit ~= nil and not self.refitting and id == self.world.selfId then
+        auditAction(self, event, id, member, a);
     end
     return a;
 end
@@ -960,7 +1087,7 @@ local function avatarPact(self, event)
             end
         elseif r ~= nil and PLAYER_SIDE[r.kind] then
             for mob, list in pairs(self.lists) do
-                if list.claimed and list.others[event.actorId] then
+                if list.claimed and (list.others[event.actorId] or list:has(event.actorId)) then
                     avatarGain(self, mob, event.actorId, master, event.category, ce, ve);
                 end
             end
@@ -1047,7 +1174,7 @@ local function dealt(self, event, actor, target)
             cause(self, a.dealer, 'skillchain');
             credit(self, list, event, actor, mob, skillchain);
         end
-        if self.research and actor.kind == 'pet' then
+        if self.research and actor.pet then
             if damage ~= nil then
                 avatarDealt(self, event, mob, damage);
             end
@@ -1156,6 +1283,134 @@ local function applyEffect(self, event, actor)
             end
         end
     end
+end
+
+local function wrapAngle(a)
+    return (a + math.pi) % (2 * math.pi) - math.pi;
+end
+
+local function calibrateHeading(self, mob, target)
+    local world = self.world;
+    if world.heading == nil or self.opts.heading == false then
+        return;
+    end
+    local yaw = world:heading(mob);
+    local mx, my = world:position(mob);
+    local tx, ty = world:position(target);
+    if yaw == nil or mx == nil or tx == nil or (tx == mx and ty == my) then
+        return;
+    end
+    local bearing = math.atan2(ty - my, tx - mx);
+    local h, H = self.heading, sim.HEADING;
+    local da, db = yaw - bearing, yaw + bearing;
+    h.ac, h.as, h.bc, h.bs = h.ac + math.cos(da), h.as + math.sin(da), h.bc + math.cos(db), h.bs + math.sin(db);
+    h.n = h.n + 1;
+    if h.n < H.samples then
+        return;
+    end
+    local ra, rb = math.sqrt(h.ac * h.ac + h.as * h.as) / h.n, math.sqrt(h.bc * h.bc + h.bs * h.bs) / h.n;
+    local was = h.convention;
+    if ra >= H.agree and rb < H.reject then
+        h.convention, h.offset = 'a', math.atan2(h.as, h.ac);
+    elseif rb >= H.agree and ra < H.reject then
+        h.convention, h.offset = 'b', math.atan2(h.bs, h.bc);
+    else
+        h.convention, h.offset = nil, nil;
+    end
+    if self.log and (was ~= h.convention or h.n % H.samples == 0) then
+        note(self, 'facing', { samples = h.n, a = ra, b = rb, convention = h.convention, offset = h.offset });
+    end
+end
+
+local function facingOf(self, mob, list, track)
+    local h, H, world = self.heading, sim.HEADING, self.world;
+    if h.convention == nil or world.heading == nil then
+        return nil;
+    end
+    local yaw = world:heading(mob);
+    local mx, my = world:position(mob);
+    if yaw == nil or mx == nil then
+        return nil;
+    end
+    local moved = track.hx ~= nil and (mx - track.hx) ^ 2 + (my - track.hy) ^ 2 > H.still * H.still;
+    track.hx, track.hy = mx, my;
+    if moved then
+        return nil;
+    end
+    local best, bestDiff, second = nil, math.huge, math.huge;
+    for _, id in ipairs(list.order) do
+        if list.entries[id].active then
+            local x, y = world:position(id);
+            local d = world:distance(id, mob);
+            if x ~= nil and (d == nil or d <= sim.RANGE) and not (x == mx and y == my) then
+                local bearing = math.atan2(y - my, x - mx);
+                local predicted = h.convention == 'a' and bearing + h.offset or h.offset - bearing;
+                local diff = math.abs(wrapAngle(yaw - predicted));
+                if diff < bestDiff then
+                    best, second, bestDiff = id, bestDiff, diff;
+                elseif diff < second then
+                    second = diff;
+                end
+            end
+        end
+    end
+    if best ~= nil and bestDiff <= H.cone and second >= H.clear then
+        return best, bestDiff;
+    end
+    return nil;
+end
+
+local function sampleHeadings(self)
+    if self.heading.convention == nil or self.opts.heading == false or self.filter == nil then
+        return;
+    end
+    local H = sim.HEADING;
+    for mob, list in pairs(self.lists) do
+        local track, state = self.tracks[mob], self.states[mob];
+        if state ~= nil and state.engaged and track.clean then
+            local facing, diff = facingOf(self, mob, list, track);
+            if facing ~= nil and facing == track.facing then
+                track.facingRun = track.facingRun + 1;
+            else
+                track.facing, track.facingRun = facing, facing ~= nil and 1 or 0;
+            end
+            local run = track.facingRun;
+            if facing ~= nil and run >= H.hold and run < H.hold + H.uses and (track.holder ~= facing or not track.holderModelled) then
+                local f = self.filter;
+                local used, surprised = f:observe(list, facing, false);
+                if self.log then
+                    note(self, 'heading', {
+                        mob = mob, facing = facing, holder = track.holder, run = run, diff = diff,
+                        used = used, surprised = surprised, predicted = f.predicted,
+                    });
+                end
+            end
+        end
+    end
+end
+
+function sim:exportHeading()
+    local h = self.heading;
+    return { ac = h.ac, as = h.as, bc = h.bc, bs = h.bs, n = h.n, convention = h.convention, offset = h.offset };
+end
+
+function sim:importHeading(saved)
+    if type(saved) ~= 'table' or type(saved.n) ~= 'number' then
+        return false;
+    end
+    for _, k in ipairs({ 'ac', 'as', 'bc', 'bs' }) do
+        if type(saved[k]) ~= 'number' then
+            return false;
+        end
+    end
+    local h = self.heading;
+    h.ac, h.as, h.bc, h.bs, h.n = saved.ac, saved.as, saved.bc, saved.bs, saved.n;
+    if (saved.convention == 'a' or saved.convention == 'b') and type(saved.offset) == 'number' then
+        h.convention, h.offset = saved.convention, saved.offset;
+    else
+        h.convention, h.offset = nil, nil;
+    end
+    return true;
 end
 
 local function holderOf(self, list, mob)
@@ -1319,28 +1574,49 @@ local function witness(self, list, mob, id, switch, previous)
     return true;
 end
 
-local function reanchor(self, list, mob, id, switch, previous)
+-- Runs on every attack, not only surprises: without it the bars keep the particles' favourite on top while the mob is hitting someone else.
+local function anchor(self, list, mob, id, switch, previous, surprised)
     local track = self.tracks[mob];
-    local leader = list:highest(previous);
+    local leader = self.log and list:highest(previous) or nil;
     local fromCe, fromVe = list:get(id);
-    local lanes = list:anchor(id);
-    track.anchored = track.anchored + 1;
-    if self.log then
-        local ledgers, ledger = track.ledger or {}, {};
-        ledger[id] = ledgers[id];
-        if previous ~= nil then
-            ledger[previous] = ledgers[previous];
-        end
-        if leader ~= nil then
-            ledger[leader] = ledgers[leader];
-        end
-        local toCe, toVe = list:get(id);
-        note(self, 'discontinuity', {
-            mob = mob, name = self.names[mob], target = id, switch = switch, holder = previous, leader = leader,
-            skill = track.skill, ledger = ledger, anchored = track.anchored, lanes = lanes,
-            from = { fromCe, fromVe }, to = { toCe, toVe },
-        });
+    local raised, lowered = 0, 0;
+    if self.filter ~= nil and self.opts.anchor ~= false then
+        raised, lowered = self.filter:explain(list, id, previous);
     end
+    local lanes = list:anchor(id, previous);
+    if surprised then
+        track.anchored = track.anchored + 1;
+    end
+    if raised + lowered > 0 then
+        cause(self, id, 'explained');
+    end
+    if lanes > 0 then
+        cause(self, id, 'anchored');
+    end
+    if not self.log or (lanes + raised + lowered == 0 and not surprised) then
+        return;
+    end
+    local toCe, toVe = list:get(id);
+    if not surprised then
+        note(self, 'anchor', {
+            mob = mob, name = self.names[mob], target = id, switch = switch, holder = previous, leader = leader,
+            raised = raised, lowered = lowered, lanes = lanes, from = { fromCe, fromVe }, to = { toCe, toVe },
+        });
+        return;
+    end
+    local ledgers, ledger = track.ledger or {}, {};
+    ledger[id] = ledgers[id];
+    if previous ~= nil then
+        ledger[previous] = ledgers[previous];
+    end
+    if leader ~= nil then
+        ledger[leader] = ledgers[leader];
+    end
+    note(self, 'discontinuity', {
+        mob = mob, name = self.names[mob], target = id, switch = switch, holder = previous, leader = leader,
+        skill = track.skill, ledger = ledger, anchored = track.anchored, raised = raised, lowered = lowered, lanes = lanes,
+        from = { fromCe, fromVe }, to = { toCe, toVe },
+    });
 end
 
 local function logTarget(self, list, mob, id, modelled, switch, covered, previous)
@@ -1465,7 +1741,7 @@ local function taken(self, event, target, victim)
     end
 
     local covered = nil;
-    local surprised, switch, previous = false, false, nil;
+    local surprised, switch, previous, chosen = false, false, nil, false;
     if event.category == CATEGORY_MELEE then
         list = list or listFor(self, mob);
         local track = self.tracks[mob];
@@ -1488,7 +1764,9 @@ local function taken(self, event, target, victim)
             end
         elseif modelled then
             setHolder(track, target.id, true);
+            calibrateHeading(self, mob, target.id);
             surprised = witness(self, list, mob, target.id, switch, previous);
+            chosen = true;
         else
             list:occupy(target.id, false);
             setHolder(track, target.id, false);
@@ -1510,6 +1788,7 @@ local function taken(self, event, target, victim)
         setHolder(track, target.id, modelled);
         if modelled then
             surprised = witness(self, list, mob, target.id, switch, previous);
+            chosen = true;
         end
     end
     if list ~= nil and not modelled and self.research and event.category == CATEGORY_MOBSKILL then
@@ -1559,8 +1838,8 @@ local function taken(self, event, target, victim)
     if event.category == CATEGORY_MOBSKILL then
         lowered(self, list, mob, event.param, target);
     end
-    if surprised then
-        reanchor(self, list, mob, id, switch, previous);
+    if chosen and self.pendingRefit == nil and (surprised or self.opts.anchor ~= false) then
+        anchor(self, list, mob, id, switch, previous, surprised);
     end
 end
 
@@ -1641,7 +1920,7 @@ local function observeAction(self, event)
         end
     end
 
-    if self.research and actor.kind == 'pet' and event.category == CATEGORY_PET_ABILITY then
+    if self.research and actor.pet and event.category == CATEGORY_PET_ABILITY then
         avatarPact(self, event);
     end
     if actor.kind == 'alliance' and abilityLike(event) then
@@ -1809,6 +2088,7 @@ local function advance(self, now)
         self.buffs:sample(self.world, self.now);
         checkWipe(self);
         checkQuiet(self);
+        sampleHeadings(self);
         local ticks = tick - self.tick;
         for mob, list in pairs(self.lists) do
             local ended = over(self, mob, self.tracks[mob]);
@@ -2107,7 +2387,29 @@ local function trimHistory(self)
     end
 end
 
+local function listed(self, id)
+    for _, list in pairs(self.lists) do
+        if list:has(id) then
+            return true;
+        end
+    end
+    return false;
+end
+
 local function applyEntity(self, id, animation, despawned, hpp)
+    if (ANIMATION_DEAD[animation] or despawned) and self.lists[id] == nil and listed(self, id) then
+        local r = resolve(self, id);
+        if r ~= nil and r.pet then
+            died(self, id);
+            self.states[id] = nil;
+            for _, track in pairs(self.tracks) do
+                if track.holder == id then
+                    setHolder(track, nil, false);
+                end
+            end
+            return;
+        end
+    end
     if ANIMATION_DEAD[animation] then
         if self.states[id] or self.lists[id] then
             record(self, { entity = id, animation = animation, despawned = false }, self.now);
@@ -2179,6 +2481,10 @@ local function replayWorld(world)
     return {
         resolve = function (_, id) return world:resolve(id); end,
         maxHP = function (_, id) return world:maxHP(id); end,
+        gearEnmity = world.gearEnmity and function (_, id, subJob, at) return world:gearEnmity(id, subJob, at); end or nil,
+        gearItems = world.gearItems and function (_, id, subJob) return world:gearItems(id, subJob); end or nil,
+        gearAt = world.gearAt and function (_, now) return world:gearAt(now); end or nil,
+        merits = world.merits and function (_, id) return world:merits(id); end or nil,
         alliance = function () return world:alliance(); end,
         zone = function () return world.zone and world:zone() or nil; end,
         wearing = function (_, id, item) return world:wearing(id, item); end,
@@ -2241,7 +2547,7 @@ local function refit(self)
     };
     opts.research, opts.shadowRule, opts.values = nil, self.shadowRule, self.values;
     local fresh = sim.new(replayWorld(self.world), opts);
-    for _, field in ipairs({ 'cap', 'levelRange', 'regions', 'actions', 'mobskills', 'scriptedMobs', 'conditional', 'ruleKeys', 'effects', 'gear' }) do
+    for _, field in ipairs({ 'cap', 'levelRange', 'regions', 'actions', 'mobskills', 'scriptedMobs', 'conditional', 'ruleKeys', 'effects', 'gear', 'avatarGear' }) do
         fresh[field] = self[field];
     end
     fresh.refitting = true;
@@ -2564,6 +2870,16 @@ function sim:clear()
     self.sneaks = {};
     self.dead = {};
     self.rests = {};
+    self.pets = {};
+end
+
+function sim:setAudit(fn)
+    self.audit = fn;
+end
+
+function sim:memberOf(id)
+    local r = resolve(self, id);
+    return r and r.member;
 end
 
 return sim;

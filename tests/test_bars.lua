@@ -140,6 +140,26 @@ t.test('a list an entry was re-anchored on says so, and stays absolute', functio
     t.eq(layout.anchored, 0);
 end);
 
+t.test('the row of the member the mob is on is marked, and nobody\'s when hate is held by an outsider or unknown', function ()
+    local layout = bars.new(18);
+    bars.layout(layout, threeRows(), nameOf, 400, track({ holder = 2, holderModelled = true }));
+    t.eq({ layout.rows[1].id, layout.rows[1].holds, layout.rows[2].id, layout.rows[2].holds }, { 1, false, 2, true });
+    bars.layout(layout, threeRows(), nameOf, 400, track({ holder = 9, holderModelled = false }));
+    t.eq({ layout.rows[1].holds, layout.rows[2].holds }, { false, false });
+    bars.layout(layout, threeRows(), nameOf, 400);
+    t.eq({ layout.rows[1].holds, layout.rows[2].holds }, { false, false });
+end);
+
+t.test('the fight\'s length is the time since its list opened, when the clock is given', function ()
+    local layout = bars.new(18);
+    bars.layout(layout, threeRows(), nameOf, 400, track({ opened = 100 }), 161.5);
+    t.eq(layout.elapsed, 61.5);
+    bars.layout(layout, threeRows(), nameOf, 400, track({ opened = 100 }));
+    t.eq(layout.elapsed, nil);
+    bars.layout(layout, threeRows(), nameOf, 400);
+    t.eq(layout.elapsed, nil);
+end);
+
 t.test('an ordering-only list where nobody has gained anything draws empty bars', function ()
     local list = hatelist.new(10000);
     list:base(1);

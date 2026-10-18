@@ -11,6 +11,7 @@ local FILES = {
     'tests/test_world.lua',
     'tests/test_feed.lua',
     'tests/test_hatelist.lua',
+    'tests/test_gear.lua',
     'tests/test_filter.lua',
     'tests/test_calibration.lua',
     'tests/test_research.lua',

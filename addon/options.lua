@@ -18,9 +18,11 @@ options.FIELDS = {
         describe = { era = 'the era table', lsb = 'LandSandBoat' }, section = 'Model' },
     { key = 'shadowAbsorb', kind = 'choice', label = 'Utsusemi absorbs that cost CE', choices = { 'lsb', 'era' },
         describe = { lsb = 'every one', era = 'all but the last' } },
+    { key = 'heading', kind = 'bool', label = 'Read which member a mob faces between swings' },
     { key = 'particles', kind = 'int', label = 'Particles', min = 0, max = filter.MAX, deferred = true,
         note = '0 turns the filter off; turning it off or on takes a reload' },
     { key = 'log', kind = 'bool', label = 'Session log', section = 'Logs' },
+    { key = 'audit', kind = 'bool', label = 'Say your own Enmity and its sources in chat on each of your actions' },
     { key = 'research', kind = 'bool', label = 'Research log' },
 };
 
@@ -36,8 +38,10 @@ local DEFAULTS = {
     debug = false,
     values = 'era',
     shadowAbsorb = 'lsb',
+    heading = true,
     particles = filter.MAX,
     log = true,
+    audit = false,
     research = true,
 };
 

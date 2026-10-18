@@ -98,8 +98,13 @@ function profiles:prior(id, member)
         return priors.NEUTRAL;
     elseif member.trust then
         return priors.TRUST;
+    elseif member.pet then
+        return priors.PET;
     end
     self.drawn[id] = { name = member.name, job = member.mainJob, seen = self.clock() };
+    if member.known then
+        return priors.KNOWN;
+    end
     local prior = priors.forJob(member.mainJob);
     local characters = self.data[self.server];
     local entry = member.mainJob and characters and characters[member.name] and characters[member.name][member.mainJob];

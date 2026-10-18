@@ -16,6 +16,7 @@ local actions = require('tables.actions');
 local emit = require('tables.emit');
 local cite = require('tables.cite');
 local overlays = require('tables.overlays');
+local items = require('tables.items');
 
 t.test('sql rows are read from one table only, with typed values', function ()
     local dump = table.concat({
@@ -589,6 +590,41 @@ t.test('curated rules resolve names to ids, keep field order, and cite their sou
     local ok, err = pcall(overlays.resolve, rules, ctx);
     t.eq(ok, false);
     t.truthy(tostring(err):find('sattva_ring', 1, true), 'names the real item');
+end);
+
+t.test('items with an Enmity modifier are gathered, support-job latents kept apart, other latents listed as skipped, Horizon on top', function ()
+    local mods = table.concat({
+        'INSERT INTO `item_mods` VALUES (15544,2,15); -- HP: 15',
+        'INSERT INTO `item_mods` VALUES (15544,27,3); -- ENMITY: 3',
+        'INSERT INTO `item_mods` VALUES (10272,27,6);     -- ENMITY: 6',
+        'INSERT INTO `item_mods` VALUES (10272,27,1);',
+        'INSERT INTO `item_mods` VALUES (13659,1,2); -- DEF: 2',
+    }, '\n');
+    local latents = table.concat({
+        'INSERT INTO `item_latents` VALUES (13437,27,-1,8,3);     -- Enmity -1 when WHM subjob',
+        'INSERT INTO `item_latents` VALUES (13659,27,1,8,1);      -- Enmity+1 when WAR Subjob',
+        'INSERT INTO `item_latents` VALUES (11355,27,-1,0,75);    -- Enmity-1 when HP <75%',
+        'INSERT INTO `item_latents` VALUES (11355,25,50,50,31);',
+    }, '\n');
+    local built = items.build({
+        itemMods = mods, itemLatents = latents,
+        itemNames = { [15544] = 'sattva_ring', [10272] = 'some_ring', [13437] = 'healers_earring', [13659] = 'mercenary_mantle', [11355] = 'dinner_jacket' },
+        latentNames = items.latentNames('values:\n  hp_under_percent:        0 # hp\n  subjob:                  8 # subjob\n'),
+        gear = {
+            { key = 15544, name = 'sattva_ring', enmity = 5, trust = 'era', source = {} },
+            { key = 13437, name = 'healers_earring', enmity = -2, subJob = 'WHM', trust = 'era', source = {} },
+        },
+    });
+    t.eq(emit.inline(built.byId[15544], { 'name', 'enmity', 'latentEnmity', 'subJob', 'trust' }), "{ name = 'sattva_ring', enmity = 5, trust = 'era' }");
+    t.eq({ built.byId[15544].lsbEnmity, built.byId[13437].lsbLatentEnmity }, { 3, -1 });
+    t.eq(emit.inline(built.byId[13437], { 'name', 'enmity', 'latentEnmity', 'subJob', 'trust' }),
+        "{ name = 'healers_earring', latentEnmity = -2, subJob = 'WHM', trust = 'era' }");
+    t.eq(emit.inline(built.byId[10272], { 'name', 'enmity', 'trust' }), "{ name = 'some_ring', enmity = 7, trust = 'lsb' }");
+    t.eq(emit.inline(built.byId[13659], { 'name', 'latentEnmity', 'subJob', 'trust' }),
+        "{ name = 'mercenary_mantle', latentEnmity = 1, subJob = 'WAR', trust = 'lsb' }");
+    t.eq(built.byId[11355], nil);
+    t.eq(built.skipped, { { id = 11355, name = 'dinner_jacket', enmity = -1, latent = 'hp_under_percent', param = 75 } });
+    t.eq({ built.flat, built.latents }, { 2, 2 });
 end);
 
 t.test('every source a rule cites is listed once, sorted', function ()
